@@ -1,0 +1,151 @@
+.score-sheet {
+  background: var(--color-surface);
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  flex: 1;
+  min-width: 220px;
+}
+
+.sheet--p1 { --player-color: var(--color-p1); }
+.sheet--p2 { --player-color: var(--color-p2); }
+
+.sheet--active {
+  border-color: var(--player-color);
+  box-shadow: 0 0 0 2px rgba(var(--player-color-rgb, 79, 195, 247), 0.2);
+}
+
+.sheet-header {
+  background: var(--color-surface-2);
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  border-bottom: 2px solid var(--player-color);
+}
+
+.sheet-player-name {
+  font-weight: 700;
+  font-size: 15px;
+  color: var(--player-color);
+  flex: 1;
+}
+
+.sheet-turn-badge {
+  background: var(--player-color);
+  color: #000;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 20px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.sheet-progress {
+  font-size: 11px;
+  color: var(--color-text-muted);
+  width: 100%;
+}
+
+.score-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.score-section-header td {
+  background: var(--color-surface-2);
+  padding: 6px 12px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: var(--color-text-muted);
+  border-top: 1px solid var(--color-border);
+}
+
+.score-row {
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+  transition: background 0.1s;
+}
+
+.score-row td {
+  padding: 7px 12px;
+  vertical-align: middle;
+}
+
+.score-row--available {
+  cursor: pointer;
+}
+
+.score-row--available:hover {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.score-row--scored {
+  opacity: 0.75;
+}
+
+.score-label {
+  font-size: 13px;
+  color: var(--color-text);
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.bonus-note {
+  font-size: 10px;
+  color: var(--color-text-muted);
+  font-weight: 400;
+}
+
+.score-value {
+  text-align: right;
+  font-size: 14px;
+  font-weight: 600;
+  width: 52px;
+}
+
+.score-final {
+  color: var(--color-text);
+}
+
+.bonus-earned {
+  color: var(--color-success);
+  font-size: 15px;
+}
+
+.score-potential {
+  color: var(--player-color);
+  opacity: 0.85;
+}
+
+.score-empty {
+  color: var(--color-text-muted);
+  font-weight: 400;
+}
+
+.score-bonus-row {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.score-total-row {
+  background: var(--color-surface-2);
+  border-top: 2px solid var(--color-border);
+}
+
+.score-total-row td {
+  padding: 10px 12px;
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--color-text);
+}
+
+.score-total-value {
+  text-align: right;
+  font-size: 20px;
+  color: var(--player-color);
+}
