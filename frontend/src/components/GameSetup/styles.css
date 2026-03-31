@@ -3,44 +3,59 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: radial-gradient(ellipse at center, var(--color-table-dark) 0%, var(--color-table) 100%);
   padding: 24px;
 }
 
 .setup-card {
-  background: var(--color-sidebar);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-lg);
-  padding: 40px 36px;
+  background: var(--paper);
+  border-radius: var(--radius-xl);
+  padding: 20px 36px 40px;
   width: 100%;
   max-width: 440px;
-  box-shadow: var(--shadow);
-  text-align: center;
+  box-shadow: var(--shadow-card);
+  display: flex;
+  flex-direction: column;
+  border-top: 10px solid var(--paper-binding);
 }
 
+.setup-back-btn {
+  align-self: flex-start;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-muted);
+  background: none;
+  padding: 4px 0;
+  margin-bottom: 4px;
+}
+.setup-back-btn:hover { color: var(--text); }
+
 .setup-logo {
-  font-size: 56px;
-  margin-bottom: 10px;
-  animation: bounce 2s ease-in-out infinite;
+  font-size: 52px;
+  margin-bottom: 8px;
+  text-align: center;
+  animation: bounce 2.2s ease-in-out infinite;
 }
 
 @keyframes bounce {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-8px); }
+  0%, 100% { transform: translateY(0) rotate(-3deg); }
+  50% { transform: translateY(-8px) rotate(3deg); }
 }
 
 .setup-title {
-  font-size: 28px;
+  font-family: 'Caveat', cursive;
+  font-size: 30px;
   font-weight: 700;
-  color: var(--color-text);
+  color: var(--text);
+  text-align: center;
   margin-bottom: 4px;
-  letter-spacing: -0.5px;
 }
 
 .setup-subtitle {
-  color: var(--color-text-muted);
-  margin-bottom: 28px;
+  color: var(--text-muted);
+  margin-bottom: 24px;
   font-size: 13px;
+  font-weight: 600;
+  text-align: center;
 }
 
 .setup-form {
@@ -49,22 +64,23 @@
   gap: 20px;
 }
 
+/* ── Player count ─────────────────────────────────── */
 .setup-count-row {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background: var(--color-sidebar-alt);
-  border: 1px solid var(--color-border);
+  background: #fdf0d8;
+  border: 2px solid var(--border);
   border-radius: var(--radius);
   padding: 10px 16px;
 }
 
 .setup-count-label {
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--color-text-muted);
+  font-size: 12px;
+  font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.5px;
+  color: var(--text-muted);
 }
 
 .setup-count-ctrl {
@@ -74,31 +90,31 @@
 }
 
 .count-btn {
-  width: 32px;
-  height: 32px;
-  background: var(--color-section-hd);
-  color: var(--color-text);
-  border-radius: 6px;
-  font-size: 20px;
+  width: 34px;
+  height: 34px;
+  background: var(--paper-binding);
+  color: var(--text);
+  border-radius: 8px;
+  font-size: 22px;
   font-weight: 700;
-  line-height: 1;
   display: flex;
   align-items: center;
   justify-content: center;
+  box-shadow: 0 2px 0 #b89060;
 }
-
-.count-btn:hover:not(:disabled) {
-  background: var(--color-border);
-}
+.count-btn:hover:not(:disabled) { background: #c8a070; }
+.count-btn:active:not(:disabled) { transform: translateY(2px); box-shadow: none; }
 
 .count-value {
-  font-size: 18px;
+  font-family: 'Caveat', cursive;
+  font-size: 22px;
   font-weight: 700;
-  color: var(--color-text);
-  min-width: 36px;
+  color: var(--text);
+  min-width: 40px;
   text-align: center;
 }
 
+/* ── Player name fields ───────────────────────────── */
 .setup-players {
   display: flex;
   flex-direction: column;
@@ -109,51 +125,59 @@
   display: flex;
   flex-direction: column;
   gap: 4px;
-  text-align: left;
 }
 
 .setup-label {
   font-size: 11px;
-  font-weight: 700;
+  font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.6px;
 }
 
-.player-label--p1 { color: var(--color-p1); }
-.player-label--p2 { color: var(--color-p2); }
-.player-label--p3 { color: var(--color-p3); }
-.player-label--p4 { color: var(--color-p4); }
-.player-label--p5 { color: var(--color-p5); }
-.player-label--p6 { color: var(--color-p6); }
+.player-label--p1 { color: var(--p1); }
+.player-label--p2 { color: var(--p2); }
+.player-label--p3 { color: var(--p3); }
+.player-label--p4 { color: var(--p4); }
+.player-label--p5 { color: var(--p5); }
+.player-label--p6 { color: var(--p6); }
 
 .setup-input {
   padding: 10px 14px;
-  background: var(--color-sidebar-alt);
-  border: 2px solid var(--color-border);
+  background: #fffef7;
+  border: 2px solid var(--border);
   border-radius: var(--radius);
-  color: var(--color-text);
+  color: var(--text);
   font-size: 15px;
+  font-weight: 600;
   outline: none;
-  transition: border-color 0.2s;
+  transition: border-color 0.2s, box-shadow 0.2s;
 }
 
-.player-input--p1:focus { border-color: var(--color-p1); }
-.player-input--p2:focus { border-color: var(--color-p2); }
-.player-input--p3:focus { border-color: var(--color-p3); }
-.player-input--p4:focus { border-color: var(--color-p4); }
-.player-input--p5:focus { border-color: var(--color-p5); }
-.player-input--p6:focus { border-color: var(--color-p6); }
+.player-input--p1:focus { border-color: var(--p1); box-shadow: 0 0 0 3px rgba(37,99,235,0.12); }
+.player-input--p2:focus { border-color: var(--p2); box-shadow: 0 0 0 3px rgba(220,95,32,0.12); }
+.player-input--p3:focus { border-color: var(--p3); box-shadow: 0 0 0 3px rgba(22,163,74,0.12); }
+.player-input--p4:focus { border-color: var(--p4); box-shadow: 0 0 0 3px rgba(147,51,234,0.12); }
+.player-input--p5:focus { border-color: var(--p5); box-shadow: 0 0 0 3px rgba(180,83,9,0.12); }
+.player-input--p6:focus { border-color: var(--p6); box-shadow: 0 0 0 3px rgba(14,116,144,0.12); }
 
+/* ── Start button ─────────────────────────────────── */
 .setup-start-btn {
   padding: 14px 24px;
-  background: var(--color-accent);
+  background: linear-gradient(180deg, #f05050 0%, #d03838 100%);
   color: #fff;
   font-size: 16px;
-  font-weight: 700;
+  font-weight: 800;
   border-radius: var(--radius);
-  letter-spacing: 0.5px;
+  box-shadow: 0 4px 0 #982020, 0 6px 16px rgba(0,0,0,0.2);
 }
 
 .setup-start-btn:hover {
-  background: var(--color-accent-hover);
+  background: linear-gradient(180deg, #f86060 0%, #d84040 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 0 #982020, 0 8px 20px rgba(0,0,0,0.2);
+}
+
+.setup-start-btn:active {
+  transform: translateY(3px) !important;
+  box-shadow: 0 1px 0 #982020 !important;
 }

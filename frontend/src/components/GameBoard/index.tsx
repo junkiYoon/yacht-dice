@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { gameApi } from '../../api/gameApi';
+import { useGameAnnouncement } from '../../hooks/useGameAnnouncement';
 import { t } from '../../i18n';
 import { Category, GameState } from '../../types/game';
 import DiceArea from '../DiceArea';
@@ -17,32 +18,20 @@ export default function GameBoard({ playerNames, onGameUpdate }: Props) {
   const [gameState, setGameState] = useState<GameState | null>(null);
   const [rolling, setRolling] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [announcement, setAnnouncement] = useState<{ player: number; key: number } | null>(null);
-
   const gameIdRef = useRef<string | null>(null);
-  const prevPlayerRef = useRef<number | null>(null);
+  const { announcement, checkTurnChange } = useGameAnnouncement();
 
   useEffect(() => {
     gameApi.createGame(playerNames.length).then((state) => {
       gameIdRef.current = state.id;
-      prevPlayerRef.current = state.currentPlayer;
       setGameState(state);
     });
   }, []);
 
   function update(state: GameState) {
     setGameState(state);
-
-    if (!state.isFinished && prevPlayerRef.current !== null && prevPlayerRef.current !== state.currentPlayer) {
-      const nextPlayer = state.currentPlayer;
-      setAnnouncement((prev) => ({ player: nextPlayer, key: (prev?.key ?? 0) + 1 }));
-      setTimeout(() => setAnnouncement(null), 2200);
-    }
-    prevPlayerRef.current = state.currentPlayer;
-
-    if (state.isFinished) {
-      onGameUpdate(state);
-    }
+    checkTurnChange(state.currentPlayer, state.isFinished);
+    if (state.isFinished) onGameUpdate(state);
   }
 
   async function handleRoll() {
@@ -112,7 +101,6 @@ export default function GameBoard({ playerNames, onGameUpdate }: Props) {
       )}
 
       <div className="board-layout">
-        {/* Left sidebar: score sheet */}
         <aside className="board-sidebar">
           <div className="sidebar-header">
             <span className="sidebar-title">{i18n.title}</span>
@@ -129,7 +117,6 @@ export default function GameBoard({ playerNames, onGameUpdate }: Props) {
           </div>
         </aside>
 
-        {/* Right: wooden table + felt tray */}
         <main className="board-table">
           <DiceArea
             gameState={gameState}

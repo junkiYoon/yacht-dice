@@ -8,9 +8,10 @@ const PLAYER_COLORS = ['p1', 'p2', 'p3', 'p4', 'p5', 'p6'];
 
 interface Props {
   onStart: (names: string[]) => void;
+  onBack: () => void;
 }
 
-export default function GameSetup({ onStart }: Props) {
+export default function GameSetup({ onStart, onBack }: Props) {
   const i18n = t();
   const [playerCount, setPlayerCount] = useState(2);
   const [names, setNames] = useState<string[]>(['', '', '', '', '', '']);
@@ -38,6 +39,7 @@ export default function GameSetup({ onStart }: Props) {
   return (
     <div className="setup-container">
       <div className="setup-card">
+        <button className="setup-back-btn" onClick={onBack}>← 뒤로</button>
         <div className="setup-logo">🎲</div>
         <h1 className="setup-title">{i18n.setup.heading}</h1>
         <p className="setup-subtitle">{i18n.setup.subtitle}</p>

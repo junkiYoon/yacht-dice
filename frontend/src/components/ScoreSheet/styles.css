@@ -1,11 +1,41 @@
+/* ── Notepad container ────────────────────────────── */
 .score-sheet {
   width: 100%;
+  height: 100%;
   overflow-x: auto;
   overflow-y: auto;
-  background: var(--color-sidebar);
-  border-right: 1px solid var(--color-border);
+  background: var(--paper);
+  position: relative;
+  /* Red margin line */
+  background-image: linear-gradient(
+    to right,
+    transparent 44px,
+    var(--paper-margin) 44px,
+    var(--paper-margin) 46px,
+    transparent 46px
+  );
 }
 
+/* ── Spiral binding at top ────────────────────────── */
+.sheet-binding {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  padding: 6px 12px;
+  background: var(--paper-binding);
+  border-bottom: 2px solid #b89060;
+}
+
+.binding-ring {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 3px solid #8a6840;
+  background: var(--wood-light);
+  box-shadow: inset 0 1px 3px rgba(0,0,0,0.3), 0 1px 2px rgba(255,255,255,0.4);
+}
+
+/* ── Table ────────────────────────────────────────── */
 .score-table {
   width: 100%;
   border-collapse: collapse;
@@ -17,28 +47,30 @@ thead th {
   position: sticky;
   top: 0;
   z-index: 1;
-  background: var(--color-sidebar);
-  border-bottom: 2px solid var(--color-border);
+  background: #fff9ee;
+  border-bottom: 2px solid var(--border);
   padding: 10px 8px 8px;
-  font-size: 12px;
+  font-family: 'Caveat', cursive;
+  font-size: 15px;
   font-weight: 700;
   text-align: center;
 }
 
 .cell-header-label {
   text-align: left !important;
-  color: var(--color-text-muted);
-  font-size: 11px;
+  font-family: 'Nunito', sans-serif;
+  font-size: 10px;
+  font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.5px;
+  color: var(--text-muted);
 }
 
-.cell-player-header {
-  min-width: 52px;
-}
+.cell-player-header { min-width: 56px; }
 
 .cell-player-header--active {
-  background: var(--color-section-hd) !important;
+  background: #fffde8 !important;
+  border-bottom-color: currentColor !important;
 }
 
 .player-header-name {
@@ -46,142 +78,174 @@ thead th {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  max-width: 70px;
+  max-width: 72px;
 }
 
 .player-header-badge {
   display: inline-block;
   margin-top: 2px;
+  font-family: 'Nunito', sans-serif;
   font-size: 9px;
-  font-weight: 700;
-  padding: 1px 5px;
+  font-weight: 800;
+  padding: 1px 6px;
   border-radius: 20px;
   background: currentColor;
-  color: #000;
+  color: #fff;
 }
 
-/* ── Player column colors ──────────────────────────── */
-.cell-p1 { color: var(--color-p1); }
-.cell-p2 { color: var(--color-p2); }
-.cell-p3 { color: var(--color-p3); }
-.cell-p4 { color: var(--color-p4); }
-.cell-p5 { color: var(--color-p5); }
-.cell-p6 { color: var(--color-p6); }
+/* ── Player colors ────────────────────────────────── */
+.cell-p1 { color: var(--p1); }
+.cell-p2 { color: var(--p2); }
+.cell-p3 { color: var(--p3); }
+.cell-p4 { color: var(--p4); }
+.cell-p5 { color: var(--p5); }
+.cell-p6 { color: var(--p6); }
 
-/* ── Section headers ───────────────────────────────── */
+/* ── Section headers ──────────────────────────────── */
 .row-section-hd td {
-  background: var(--color-section-hd);
-  padding: 5px 10px;
-  font-size: 10px;
+  background: #fdf0e0;
+  padding: 4px 10px 4px 52px;
+  font-family: 'Caveat', cursive;
+  font-size: 13px;
   font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  color: var(--color-text-muted);
-  border-top: 1px solid var(--color-border);
+  color: var(--text-muted);
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  letter-spacing: 0.5px;
 }
 
-/* ── Score rows ────────────────────────────────────── */
+/* ── Score rows — each row = a ruled line ─────────── */
 .score-row {
-  border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+  border-bottom: 1px solid var(--paper-line);
   transition: background 0.1s;
 }
 
-.score-row:hover {
-  background: rgba(255, 255, 255, 0.02);
-}
+.score-row:hover { background: rgba(212, 232, 248, 0.2); }
 
 .cell-label {
-  padding: 6px 10px;
-  color: var(--color-text);
+  padding: 7px 8px 7px 52px;
   font-size: 12px;
+  font-weight: 600;
+  color: var(--text);
   white-space: nowrap;
 }
 
-.cell-label--muted {
-  color: var(--color-text-muted);
-  font-size: 11px;
-}
+.cell-label--muted { color: var(--text-muted); font-size: 11px; }
 
 .bonus-note {
   display: block;
   font-size: 9px;
-  color: var(--color-text-dim);
+  color: var(--text-dim);
   font-weight: 400;
   margin-top: 1px;
 }
 
 .cell-score {
   text-align: center;
-  padding: 6px 4px;
+  padding: 7px 4px;
   font-size: 13px;
-  font-weight: 600;
-  transition: background 0.1s;
+  font-weight: 700;
+  transition: background 0.12s;
 }
 
-.cell-scored {
-  opacity: 0.75;
-  color: var(--color-scored) !important;
-}
-
+/* ── Available cell ───────────────────────────────── */
 .cell-available {
   cursor: pointer;
-  background: rgba(255, 224, 102, 0.1);
+  background: rgba(255, 243, 176, 0.5);
+}
+.cell-available:hover { background: rgba(255, 235, 100, 0.7); }
+
+/* ── Scored cell (written-in look) ───────────────── */
+.cell-scored { color: var(--ink) !important; }
+
+/* ── Score registration animations ───────────────── */
+@keyframes cellGlow {
+  0%   { background: rgba(255, 210, 50, 0.65); }
+  40%  { background: rgba(255, 230, 80, 0.45); }
+  100% { background: transparent; }
 }
 
-.cell-available:hover {
-  background: rgba(255, 224, 102, 0.22);
+@keyframes writeIn {
+  0%   { opacity: 0; transform: rotate(-6deg) scale(0.65); }
+  55%  { opacity: 1; transform: rotate(2deg) scale(1.12); }
+  80%  { transform: rotate(-1deg) scale(0.96); }
+  100% { transform: rotate(0deg) scale(1); }
 }
 
-/* ── Values ────────────────────────────────────────── */
+.cell-newly-scored { animation: cellGlow 1.5s ease forwards; }
+
+.val-newly-written {
+  display: inline-block;
+  font-family: 'Caveat', cursive;
+  font-size: 16px;
+  color: var(--ink);
+  animation: writeIn 0.5s cubic-bezier(0.22, 1.4, 0.36, 1) forwards;
+}
+
+/* ── Values ───────────────────────────────────────── */
 .val-scored {
-  color: var(--color-scored);
+  font-family: 'Caveat', cursive;
+  font-size: 15px;
+  color: var(--ink);
 }
 
 .val-potential {
-  color: var(--color-available);
   font-size: 12px;
+  font-weight: 700;
+  opacity: 0.8;
 }
 
 .val-empty {
-  color: var(--color-text-dim);
+  color: var(--text-dim);
   font-weight: 400;
   font-size: 12px;
 }
 
-/* ── Subtotal / Bonus ──────────────────────────────── */
-.row-subtotal {
-  background: rgba(255, 255, 255, 0.02);
-}
+/* ── Subtotal / Bonus ─────────────────────────────── */
+.row-subtotal { background: rgba(220, 235, 250, 0.2); }
 
-.cell-subtotal {
-  font-size: 12px;
-}
+.cell-subtotal { font-size: 12px; }
 
 .subtotal-of {
   font-size: 9px;
-  color: var(--color-text-dim);
+  color: var(--text-dim);
   font-weight: 400;
   margin-left: 1px;
 }
 
 .row-bonus {
-  background: rgba(255, 255, 255, 0.02);
-  border-bottom: 1px solid var(--color-border);
+  background: rgba(220, 235, 250, 0.2);
+  border-bottom: 1px solid var(--border);
 }
 
 .cell-bonus-earned {
-  color: var(--color-success) !important;
-  font-size: 14px;
+  color: var(--success) !important;
+  font-family: 'Caveat', cursive;
+  font-size: 16px;
 }
 
-/* ── Total row ─────────────────────────────────────── */
+/* ── Total ────────────────────────────────────────── */
+tfoot {
+  position: sticky;
+  bottom: 0;
+}
+
 .row-total td {
   padding: 10px 8px;
-  background: var(--color-section-hd);
-  border-top: 2px solid var(--color-border);
-  font-weight: 700;
+  background: #fdf0e0;
+  border-top: 2px solid var(--border-strong);
+  font-weight: 800;
+}
+
+.row-total .cell-label {
+  font-family: 'Caveat', cursive;
+  font-size: 16px;
+  color: var(--text);
+  padding-left: 52px;
 }
 
 .cell-total {
-  font-size: 17px !important;
+  font-family: 'Caveat', cursive;
+  font-size: 20px !important;
+  font-weight: 700;
 }
