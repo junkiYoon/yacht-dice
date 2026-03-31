@@ -1,0 +1,99 @@
+.mode-select-container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+.mode-select-card {
+  background: var(--paper);
+  border-radius: var(--radius-xl);
+  padding: 48px 40px;
+  width: 100%;
+  max-width: 400px;
+  text-align: center;
+  box-shadow: var(--shadow-card);
+  position: relative;
+  /* Binding strip at top */
+  border-top: 10px solid var(--paper-binding);
+}
+
+.mode-logo {
+  font-size: 64px;
+  margin-bottom: 10px;
+  animation: bounce 2.2s ease-in-out infinite;
+}
+
+@keyframes bounce {
+  0%, 100% { transform: translateY(0) rotate(-3deg); }
+  50% { transform: translateY(-10px) rotate(3deg); }
+}
+
+.mode-title {
+  font-family: 'Caveat', 'Gaegu', cursive;
+  font-size: 36px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 4px;
+}
+
+.mode-subtitle {
+  font-size: 13px;
+  color: var(--text-muted);
+  margin-bottom: 32px;
+  font-weight: 600;
+}
+
+.mode-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.mode-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  padding: 22px 24px;
+  border-radius: var(--radius-lg);
+  text-align: center;
+  box-shadow: var(--shadow-btn);
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+
+.mode-btn:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 0 rgba(0,0,0,0.18), 0 12px 28px rgba(0,0,0,0.18);
+}
+
+.mode-btn:active {
+  transform: translateY(2px) !important;
+  box-shadow: 0 2px 0 rgba(0,0,0,0.18), 0 4px 12px rgba(0,0,0,0.12) !important;
+}
+
+.mode-btn--local {
+  background: linear-gradient(135deg, #fff9ee, #fdf0d8);
+  border: 2px solid var(--border-strong);
+  color: var(--text);
+}
+
+.mode-btn--online {
+  background: linear-gradient(135deg, #1e3a6e, #162d58);
+  border: 2px solid rgba(100,160,255,0.4);
+  color: #fff;
+}
+
+.mode-btn-icon { font-size: 34px; line-height: 1; }
+
+.mode-btn-label {
+  font-size: 17px;
+  font-weight: 800;
+}
+
+.mode-btn-desc {
+  font-size: 12px;
+  font-weight: 600;
+  opacity: 0.6;
+}

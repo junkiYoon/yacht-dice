@@ -1,0 +1,30 @@
+/* Online-specific additions — base layout from GameBoard/styles.css */
+
+.sidebar-header-badges {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.not-my-turn-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.28);
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding-top: 28px;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.not-my-turn-text {
+  font-size: 13px;
+  font-weight: 700;
+  color: rgba(255,255,255,0.9);
+  background: rgba(0,0,0,0.55);
+  padding: 8px 20px;
+  border-radius: 20px;
+  backdrop-filter: blur(6px);
+}

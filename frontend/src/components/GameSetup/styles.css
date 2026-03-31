@@ -1,0 +1,183 @@
+.setup-container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+.setup-card {
+  background: var(--paper);
+  border-radius: var(--radius-xl);
+  padding: 20px 36px 40px;
+  width: 100%;
+  max-width: 440px;
+  box-shadow: var(--shadow-card);
+  display: flex;
+  flex-direction: column;
+  border-top: 10px solid var(--paper-binding);
+}
+
+.setup-back-btn {
+  align-self: flex-start;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-muted);
+  background: none;
+  padding: 4px 0;
+  margin-bottom: 4px;
+}
+.setup-back-btn:hover { color: var(--text); }
+
+.setup-logo {
+  font-size: 52px;
+  margin-bottom: 8px;
+  text-align: center;
+  animation: bounce 2.2s ease-in-out infinite;
+}
+
+@keyframes bounce {
+  0%, 100% { transform: translateY(0) rotate(-3deg); }
+  50% { transform: translateY(-8px) rotate(3deg); }
+}
+
+.setup-title {
+  font-family: 'Caveat', 'Gaegu', cursive;
+  font-size: 30px;
+  font-weight: 700;
+  color: var(--text);
+  text-align: center;
+  margin-bottom: 4px;
+}
+
+.setup-subtitle {
+  color: var(--text-muted);
+  margin-bottom: 24px;
+  font-size: 13px;
+  font-weight: 600;
+  text-align: center;
+}
+
+.setup-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* ── Player count ─────────────────────────────────── */
+.setup-count-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #fdf0d8;
+  border: 2px solid var(--border);
+  border-radius: var(--radius);
+  padding: 10px 16px;
+}
+
+.setup-count-label {
+  font-size: 12px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-muted);
+}
+
+.setup-count-ctrl {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.count-btn {
+  width: 34px;
+  height: 34px;
+  background: var(--paper-binding);
+  color: var(--text);
+  border-radius: 8px;
+  font-size: 22px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 0 #b89060;
+}
+.count-btn:hover:not(:disabled) { background: #c8a070; }
+.count-btn:active:not(:disabled) { transform: translateY(2px); box-shadow: none; }
+
+.count-value {
+  font-family: 'Caveat', 'Gaegu', cursive;
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--text);
+  min-width: 40px;
+  text-align: center;
+}
+
+/* ── Player name fields ───────────────────────────── */
+.setup-players {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.setup-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.setup-label {
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+}
+
+.player-label--p1 { color: var(--p1); }
+.player-label--p2 { color: var(--p2); }
+.player-label--p3 { color: var(--p3); }
+.player-label--p4 { color: var(--p4); }
+.player-label--p5 { color: var(--p5); }
+.player-label--p6 { color: var(--p6); }
+
+.setup-input {
+  padding: 10px 14px;
+  background: #fffef7;
+  border: 2px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text);
+  font-size: 15px;
+  font-weight: 600;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.player-input--p1:focus { border-color: var(--p1); box-shadow: 0 0 0 3px rgba(37,99,235,0.12); }
+.player-input--p2:focus { border-color: var(--p2); box-shadow: 0 0 0 3px rgba(220,95,32,0.12); }
+.player-input--p3:focus { border-color: var(--p3); box-shadow: 0 0 0 3px rgba(22,163,74,0.12); }
+.player-input--p4:focus { border-color: var(--p4); box-shadow: 0 0 0 3px rgba(147,51,234,0.12); }
+.player-input--p5:focus { border-color: var(--p5); box-shadow: 0 0 0 3px rgba(180,83,9,0.12); }
+.player-input--p6:focus { border-color: var(--p6); box-shadow: 0 0 0 3px rgba(14,116,144,0.12); }
+
+/* ── Start button ─────────────────────────────────── */
+.setup-start-btn {
+  padding: 14px 24px;
+  background: linear-gradient(180deg, #f05050 0%, #d03838 100%);
+  color: #fff;
+  font-size: 16px;
+  font-weight: 800;
+  border-radius: var(--radius);
+  box-shadow: 0 4px 0 #982020, 0 6px 16px rgba(0,0,0,0.2);
+}
+
+.setup-start-btn:hover {
+  background: linear-gradient(180deg, #f86060 0%, #d84040 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 0 #982020, 0 8px 20px rgba(0,0,0,0.2);
+}
+
+.setup-start-btn:active {
+  transform: translateY(3px) !important;
+  box-shadow: 0 1px 0 #982020 !important;
+}
