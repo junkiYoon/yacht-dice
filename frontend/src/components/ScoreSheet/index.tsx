@@ -4,20 +4,15 @@ import './styles.css';
 
 const UPPER_CATEGORIES: Category[] = ['aces', 'deuces', 'threes', 'fours', 'fives', 'sixes'];
 const LOWER_CATEGORIES: Category[] = ['choice', 'fourOfKind', 'fullHouse', 'smallStraight', 'largeStraight', 'yacht'];
-
 interface Props {
-  playerIndex: 0 | 1;
-  playerName: string;
-  scores: PlayerScores;
-  isCurrentPlayer: boolean;
-  potentialScores: Record<Category, number> | null;
-  onScore: (category: Category) => void;
-  rollCount: number;
+  playerNames: string[];
   gameState: GameState;
+  onScore: (category: Category) => void;
 }
 
-function ScoreRow({
+function ScoreCell({
   category,
+  playerIndex,
   scores,
   isCurrentPlayer,
   potentialScores,
@@ -25,114 +20,134 @@ function ScoreRow({
   onScore,
 }: {
   category: Category;
+  playerIndex: number;
   scores: PlayerScores;
   isCurrentPlayer: boolean;
   potentialScores: Record<Category, number> | null;
   rollCount: number;
   onScore: (c: Category) => void;
 }) {
-  const i18n = t();
-  const label = i18n.categories[category];
   const scored = scores[category];
   const potential = potentialScores?.[category];
   const canScore = isCurrentPlayer && scored === null && rollCount > 0;
 
   return (
-    <tr
+    <td
       className={[
-        'score-row',
-        scored !== null ? 'score-row--scored' : '',
-        canScore ? 'score-row--available' : '',
-      ].join(' ')}
+        'cell-score',
+        `cell-p${Math.min(playerIndex + 1, 6)}`,
+        scored !== null ? 'cell-scored' : '',
+        canScore ? 'cell-available' : '',
+      ]
+        .filter(Boolean)
+        .join(' ')}
       onClick={() => canScore && onScore(category)}
-      title={canScore ? `${label}: ${potential ?? 0}점` : undefined}
+      title={canScore ? `${potential ?? 0}점 등록` : undefined}
     >
-      <td className="score-label">{label}</td>
-      <td className="score-value">
-        {scored !== null ? (
-          <span className="score-final">{scored}</span>
-        ) : canScore && potential !== undefined ? (
-          <span className="score-potential">{potential}</span>
-        ) : (
-          <span className="score-empty">—</span>
-        )}
-      </td>
-    </tr>
+      {scored !== null ? (
+        <span className="val-scored">{scored}</span>
+      ) : canScore && potential !== undefined ? (
+        <span className="val-potential">{potential}</span>
+      ) : (
+        <span className="val-empty">—</span>
+      )}
+    </td>
   );
 }
 
-export default function ScoreSheet({
-  playerIndex,
-  playerName,
-  scores,
-  isCurrentPlayer,
-  potentialScores,
-  onScore,
-  rollCount,
-  gameState,
-}: Props) {
+export default function ScoreSheet({ playerNames, gameState, onScore }: Props) {
   const i18n = t();
-  const colorClass = playerIndex === 0 ? 'sheet--p1' : 'sheet--p2';
+  const { players, currentPlayer, rollCount, potentialScores } = gameState;
+  const n = players.length;
 
-  const scoredCount = Object.values(gameState.players[playerIndex]).filter(
-    (v, i) => i < 12 && v !== null
-  ).length;
+  function renderCategoryRows(categories: Category[]) {
+    return categories.map((cat) => (
+      <tr key={cat} className="score-row">
+        <td className="cell-label">{i18n.categories[cat]}</td>
+        {players.map((scores, pi) => (
+          <ScoreCell
+            key={pi}
+            category={cat}
+            playerIndex={pi}
+            scores={scores}
+            isCurrentPlayer={pi === currentPlayer}
+            potentialScores={pi === currentPlayer ? potentialScores : null}
+            rollCount={rollCount}
+            onScore={onScore}
+          />
+        ))}
+      </tr>
+    ));
+  }
 
   return (
-    <div className={`score-sheet ${colorClass} ${isCurrentPlayer ? 'sheet--active' : ''}`}>
-      <div className="sheet-header">
-        <span className="sheet-player-name">{playerName}</span>
-        {isCurrentPlayer && <span className="sheet-turn-badge">현재 차례</span>}
-        <span className="sheet-progress">{i18n.game.round(scoredCount)}</span>
-      </div>
-
+    <div className="score-sheet">
       <table className="score-table">
-        <tbody>
-          <tr className="score-section-header">
-            <td colSpan={2}>{i18n.scoreSheet.upper}</td>
+        <thead>
+          <tr>
+            <th className="cell-label cell-header-label">{i18n.scoreSheet.category}</th>
+            {playerNames.map((name, pi) => (
+              <th
+                key={pi}
+                className={[
+                  'cell-player-header',
+                  `cell-p${Math.min(pi + 1, 6)}`,
+                  pi === currentPlayer ? 'cell-player-header--active' : '',
+                ]
+                  .filter(Boolean)
+                  .join(' ')}
+              >
+                <span className="player-header-name">{name}</span>
+                {pi === currentPlayer && (
+                  <span className="player-header-badge">차례</span>
+                )}
+              </th>
+            ))}
           </tr>
-          {UPPER_CATEGORIES.map((cat) => (
-            <ScoreRow
-              key={cat}
-              category={cat}
-              scores={scores}
-              isCurrentPlayer={isCurrentPlayer}
-              potentialScores={potentialScores}
-              rollCount={rollCount}
-              onScore={onScore}
-            />
-          ))}
-          <tr className="score-row score-bonus-row">
-            <td className="score-label">
+        </thead>
+        <tbody>
+          <tr className="row-section-hd">
+            <td colSpan={n + 1}>{i18n.scoreSheet.upper}</td>
+          </tr>
+
+          {renderCategoryRows(UPPER_CATEGORIES)}
+
+          {/* Subtotal + Bonus */}
+          <tr className="row-subtotal">
+            <td className="cell-label cell-label--muted">{i18n.scoreSheet.subtotal}</td>
+            {players.map((scores, pi) => (
+              <td key={pi} className={`cell-score cell-p${Math.min(pi + 1, 6)} cell-subtotal`}>
+                {scores.upperTotal}
+                <span className="subtotal-of">/63</span>
+              </td>
+            ))}
+          </tr>
+          <tr className="row-bonus">
+            <td className="cell-label">
               {i18n.categories.bonus}
               <span className="bonus-note">{i18n.scoreSheet.bonusNote}</span>
             </td>
-            <td className="score-value">
-              <span className={`score-final ${scores.bonus > 0 ? 'bonus-earned' : ''}`}>
-                {scores.bonus > 0 ? `+${scores.bonus}` : `${scores.upperTotal} / 63`}
-              </span>
-            </td>
+            {players.map((scores, pi) => (
+              <td key={pi} className={`cell-score cell-p${Math.min(pi + 1, 6)} ${scores.bonus > 0 ? 'cell-bonus-earned' : ''}`}>
+                {scores.bonus > 0 ? `+${scores.bonus}` : '—'}
+              </td>
+            ))}
           </tr>
 
-          <tr className="score-section-header">
-            <td colSpan={2}>{i18n.scoreSheet.lower}</td>
+          <tr className="row-section-hd">
+            <td colSpan={n + 1}>{i18n.scoreSheet.lower}</td>
           </tr>
-          {LOWER_CATEGORIES.map((cat) => (
-            <ScoreRow
-              key={cat}
-              category={cat}
-              scores={scores}
-              isCurrentPlayer={isCurrentPlayer}
-              potentialScores={potentialScores}
-              rollCount={rollCount}
-              onScore={onScore}
-            />
-          ))}
+
+          {renderCategoryRows(LOWER_CATEGORIES)}
         </tbody>
         <tfoot>
-          <tr className="score-total-row">
-            <td>{i18n.scoreSheet.total}</td>
-            <td className="score-total-value">{scores.total}</td>
+          <tr className="row-total">
+            <td className="cell-label">{i18n.scoreSheet.total}</td>
+            {players.map((scores, pi) => (
+              <td key={pi} className={`cell-score cell-total cell-p${Math.min(pi + 1, 6)}`}>
+                {scores.total}
+              </td>
+            ))}
           </tr>
         </tfoot>
       </table>

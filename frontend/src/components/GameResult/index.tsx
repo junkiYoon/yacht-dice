@@ -1,81 +1,110 @@
 import { t } from '../../i18n';
-import { GameState } from '../../types/game';
+import { Category, GameState } from '../../types/game';
 import './styles.css';
 
+const UPPER_CATEGORIES: Category[] = ['aces', 'deuces', 'threes', 'fours', 'fives', 'sixes'];
+const LOWER_CATEGORIES: Category[] = ['choice', 'fourOfKind', 'fullHouse', 'smallStraight', 'largeStraight', 'yacht'];
 interface Props {
   gameState: GameState;
-  playerNames: [string, string];
+  playerNames: string[];
   onRestart: () => void;
 }
 
 export default function GameResult({ gameState, playerNames, onRestart }: Props) {
   const i18n = t();
-  const { winner, players } = gameState;
+  const { winners, players } = gameState;
 
-  const winnerName =
-    winner === 0 ? playerNames[0] : winner === 1 ? playerNames[1] : null;
+  const isTie = winners && winners.length > 1;
+  const winnerNames = (winners ?? []).map((i) => playerNames[i]);
 
-  const p1Score = players[0].total;
-  const p2Score = players[1].total;
+  let headlineEmoji = '🏆';
+  let headlineText: string;
+  if (!winners || winners.length === 0) {
+    headlineText = i18n.result.tie;
+  } else if (isTie) {
+    headlineEmoji = '🤝';
+    headlineText = i18n.result.winners(winnerNames.join(' & '));
+  } else {
+    headlineText = i18n.result.winner(winnerNames[0]);
+  }
 
   return (
     <div className="result-container">
       <div className="result-card">
-        <div className="result-trophy">{winner === -1 ? '🤝' : '🏆'}</div>
-        <h1 className="result-headline">
-          {winner === -1
-            ? i18n.result.tie
-            : i18n.result.winner(winnerName!)}
-        </h1>
+        <div className="result-trophy">{headlineEmoji}</div>
+        <h1 className="result-headline">{headlineText}</h1>
 
+        {/* Score summary */}
         <div className="result-scores">
-          <div className={`result-player ${winner === 0 ? 'result-player--winner' : ''}`}>
-            <span className="result-player-name result-p1">{playerNames[0]}</span>
-            <span className="result-player-score">{p1Score}점</span>
-          </div>
-          <div className="result-separator">vs</div>
-          <div className={`result-player ${winner === 1 ? 'result-player--winner' : ''}`}>
-            <span className="result-player-name result-p2">{playerNames[1]}</span>
-            <span className="result-player-score">{p2Score}점</span>
-          </div>
+          {players.map((scores, pi) => {
+            const isWinner = winners?.includes(pi);
+            return (
+              <div
+                key={pi}
+                className={[
+                  'result-player',
+                  `result-p${Math.min(pi + 1, 6)}`,
+                  isWinner ? 'result-player--winner' : '',
+                ]
+                  .filter(Boolean)
+                  .join(' ')}
+              >
+                {isWinner && <span className="result-crown">👑</span>}
+                <span className="result-player-name">{playerNames[pi]}</span>
+                <span className="result-player-score">{scores.total}점</span>
+              </div>
+            );
+          })}
         </div>
 
+        {/* Score breakdown */}
         <div className="result-breakdown">
-          <h3>최종 점수판</h3>
+          <h3>{i18n.result.finalScore}</h3>
           <table className="result-table">
             <thead>
               <tr>
                 <th>카테고리</th>
-                <th className="result-p1">{playerNames[0]}</th>
-                <th className="result-p2">{playerNames[1]}</th>
+                {playerNames.map((name, pi) => (
+                  <th key={pi} className={`result-p${Math.min(pi + 1, 6)}`}>
+                    {name}
+                  </th>
+                ))}
               </tr>
             </thead>
             <tbody>
-              {(['aces', 'deuces', 'threes', 'fours', 'fives', 'sixes'] as const).map((cat) => (
+              {UPPER_CATEGORIES.map((cat) => (
                 <tr key={cat}>
                   <td>{i18n.categories[cat]}</td>
-                  <td>{players[0][cat] ?? 0}</td>
-                  <td>{players[1][cat] ?? 0}</td>
+                  {players.map((s, pi) => (
+                    <td key={pi}>{s[cat] ?? 0}</td>
+                  ))}
                 </tr>
               ))}
               <tr className="result-bonus-row">
                 <td>{i18n.categories.bonus}</td>
-                <td className={players[0].bonus > 0 ? 'bonus-cell' : ''}>{players[0].bonus}</td>
-                <td className={players[1].bonus > 0 ? 'bonus-cell' : ''}>{players[1].bonus}</td>
+                {players.map((s, pi) => (
+                  <td key={pi} className={s.bonus > 0 ? 'bonus-cell' : ''}>
+                    {s.bonus > 0 ? `+${s.bonus}` : '—'}
+                  </td>
+                ))}
               </tr>
-              {(['choice', 'fourOfKind', 'fullHouse', 'smallStraight', 'largeStraight', 'yacht'] as const).map((cat) => (
+              {LOWER_CATEGORIES.map((cat) => (
                 <tr key={cat}>
                   <td>{i18n.categories[cat]}</td>
-                  <td>{players[0][cat] ?? 0}</td>
-                  <td>{players[1][cat] ?? 0}</td>
+                  {players.map((s, pi) => (
+                    <td key={pi}>{s[cat] ?? 0}</td>
+                  ))}
                 </tr>
               ))}
             </tbody>
             <tfoot>
               <tr>
                 <td>합계</td>
-                <td className="result-total">{p1Score}</td>
-                <td className="result-total">{p2Score}</td>
+                {players.map((s, pi) => (
+                  <td key={pi} className={`result-total result-p${Math.min(pi + 1, 6)}`}>
+                    {s.total}
+                  </td>
+                ))}
               </tr>
             </tfoot>
           </table>

@@ -1,151 +1,187 @@
 .score-sheet {
-  background: var(--color-surface);
-  border: 2px solid var(--color-border);
-  border-radius: var(--radius-lg);
-  overflow: hidden;
-  transition: border-color 0.2s, box-shadow 0.2s;
-  flex: 1;
-  min-width: 220px;
-}
-
-.sheet--p1 { --player-color: var(--color-p1); }
-.sheet--p2 { --player-color: var(--color-p2); }
-
-.sheet--active {
-  border-color: var(--player-color);
-  box-shadow: 0 0 0 2px rgba(var(--player-color-rgb, 79, 195, 247), 0.2);
-}
-
-.sheet-header {
-  background: var(--color-surface-2);
-  padding: 12px 16px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  flex-wrap: wrap;
-  border-bottom: 2px solid var(--player-color);
-}
-
-.sheet-player-name {
-  font-weight: 700;
-  font-size: 15px;
-  color: var(--player-color);
-  flex: 1;
-}
-
-.sheet-turn-badge {
-  background: var(--player-color);
-  color: #000;
-  font-size: 10px;
-  font-weight: 700;
-  padding: 2px 7px;
-  border-radius: 20px;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-.sheet-progress {
-  font-size: 11px;
-  color: var(--color-text-muted);
   width: 100%;
+  overflow-x: auto;
+  overflow-y: auto;
+  background: var(--color-sidebar);
+  border-right: 1px solid var(--color-border);
 }
 
 .score-table {
   width: 100%;
   border-collapse: collapse;
+  font-size: 12px;
 }
 
-.score-section-header td {
-  background: var(--color-surface-2);
-  padding: 6px 12px;
+/* ── Header ────────────────────────────────────────── */
+thead th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background: var(--color-sidebar);
+  border-bottom: 2px solid var(--color-border);
+  padding: 10px 8px 8px;
+  font-size: 12px;
+  font-weight: 700;
+  text-align: center;
+}
+
+.cell-header-label {
+  text-align: left !important;
+  color: var(--color-text-muted);
   font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.cell-player-header {
+  min-width: 52px;
+}
+
+.cell-player-header--active {
+  background: var(--color-section-hd) !important;
+}
+
+.player-header-name {
+  display: block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 70px;
+}
+
+.player-header-badge {
+  display: inline-block;
+  margin-top: 2px;
+  font-size: 9px;
+  font-weight: 700;
+  padding: 1px 5px;
+  border-radius: 20px;
+  background: currentColor;
+  color: #000;
+}
+
+/* ── Player column colors ──────────────────────────── */
+.cell-p1 { color: var(--color-p1); }
+.cell-p2 { color: var(--color-p2); }
+.cell-p3 { color: var(--color-p3); }
+.cell-p4 { color: var(--color-p4); }
+.cell-p5 { color: var(--color-p5); }
+.cell-p6 { color: var(--color-p6); }
+
+/* ── Section headers ───────────────────────────────── */
+.row-section-hd td {
+  background: var(--color-section-hd);
+  padding: 5px 10px;
+  font-size: 10px;
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.8px;
+  letter-spacing: 1px;
   color: var(--color-text-muted);
   border-top: 1px solid var(--color-border);
 }
 
+/* ── Score rows ────────────────────────────────────── */
 .score-row {
-  border-bottom: 1px solid rgba(255,255,255,0.04);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.03);
   transition: background 0.1s;
 }
 
-.score-row td {
-  padding: 7px 12px;
-  vertical-align: middle;
-}
-
-.score-row--available {
-  cursor: pointer;
-}
-
-.score-row--available:hover {
-  background: rgba(255, 255, 255, 0.06);
-}
-
-.score-row--scored {
-  opacity: 0.75;
-}
-
-.score-label {
-  font-size: 13px;
-  color: var(--color-text);
-  display: flex;
-  flex-direction: column;
-  gap: 1px;
-}
-
-.bonus-note {
-  font-size: 10px;
-  color: var(--color-text-muted);
-  font-weight: 400;
-}
-
-.score-value {
-  text-align: right;
-  font-size: 14px;
-  font-weight: 600;
-  width: 52px;
-}
-
-.score-final {
-  color: var(--color-text);
-}
-
-.bonus-earned {
-  color: var(--color-success);
-  font-size: 15px;
-}
-
-.score-potential {
-  color: var(--player-color);
-  opacity: 0.85;
-}
-
-.score-empty {
-  color: var(--color-text-muted);
-  font-weight: 400;
-}
-
-.score-bonus-row {
+.score-row:hover {
   background: rgba(255, 255, 255, 0.02);
 }
 
-.score-total-row {
-  background: var(--color-surface-2);
-  border-top: 2px solid var(--color-border);
-}
-
-.score-total-row td {
-  padding: 10px 12px;
-  font-weight: 700;
-  font-size: 14px;
+.cell-label {
+  padding: 6px 10px;
   color: var(--color-text);
+  font-size: 12px;
+  white-space: nowrap;
 }
 
-.score-total-value {
-  text-align: right;
-  font-size: 20px;
-  color: var(--player-color);
+.cell-label--muted {
+  color: var(--color-text-muted);
+  font-size: 11px;
+}
+
+.bonus-note {
+  display: block;
+  font-size: 9px;
+  color: var(--color-text-dim);
+  font-weight: 400;
+  margin-top: 1px;
+}
+
+.cell-score {
+  text-align: center;
+  padding: 6px 4px;
+  font-size: 13px;
+  font-weight: 600;
+  transition: background 0.1s;
+}
+
+.cell-scored {
+  opacity: 0.75;
+  color: var(--color-scored) !important;
+}
+
+.cell-available {
+  cursor: pointer;
+  background: rgba(255, 224, 102, 0.1);
+}
+
+.cell-available:hover {
+  background: rgba(255, 224, 102, 0.22);
+}
+
+/* ── Values ────────────────────────────────────────── */
+.val-scored {
+  color: var(--color-scored);
+}
+
+.val-potential {
+  color: var(--color-available);
+  font-size: 12px;
+}
+
+.val-empty {
+  color: var(--color-text-dim);
+  font-weight: 400;
+  font-size: 12px;
+}
+
+/* ── Subtotal / Bonus ──────────────────────────────── */
+.row-subtotal {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.cell-subtotal {
+  font-size: 12px;
+}
+
+.subtotal-of {
+  font-size: 9px;
+  color: var(--color-text-dim);
+  font-weight: 400;
+  margin-left: 1px;
+}
+
+.row-bonus {
+  background: rgba(255, 255, 255, 0.02);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.cell-bonus-earned {
+  color: var(--color-success) !important;
+  font-size: 14px;
+}
+
+/* ── Total row ─────────────────────────────────────── */
+.row-total td {
+  padding: 10px 8px;
+  background: var(--color-section-hd);
+  border-top: 2px solid var(--color-border);
+  font-weight: 700;
+}
+
+.cell-total {
+  font-size: 17px !important;
 }

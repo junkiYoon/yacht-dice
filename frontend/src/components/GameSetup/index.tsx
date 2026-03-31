@@ -2,21 +2,37 @@ import { useState } from 'react';
 import { t } from '../../i18n';
 import './styles.css';
 
+const MIN_PLAYERS = 1;
+const MAX_PLAYERS = 6;
+const PLAYER_COLORS = ['p1', 'p2', 'p3', 'p4', 'p5', 'p6'];
+
 interface Props {
-  onStart: (names: [string, string]) => void;
+  onStart: (names: string[]) => void;
 }
 
 export default function GameSetup({ onStart }: Props) {
   const i18n = t();
-  const [p1, setP1] = useState('');
-  const [p2, setP2] = useState('');
+  const [playerCount, setPlayerCount] = useState(2);
+  const [names, setNames] = useState<string[]>(['', '', '', '', '', '']);
+
+  function setName(index: number, value: string) {
+    setNames((prev) => {
+      const next = [...prev];
+      next[index] = value;
+      return next;
+    });
+  }
+
+  function handleCountChange(delta: number) {
+    setPlayerCount((prev) => Math.max(MIN_PLAYERS, Math.min(MAX_PLAYERS, prev + delta)));
+  }
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    onStart([
-      p1.trim() || i18n.setup.player1Placeholder,
-      p2.trim() || i18n.setup.player2Placeholder,
-    ]);
+    const playerNames = Array.from({ length: playerCount }, (_, i) =>
+      names[i].trim() || i18n.setup.playerNamePlaceholder(i + 1)
+    );
+    onStart(playerNames);
   }
 
   return (
@@ -25,30 +41,49 @@ export default function GameSetup({ onStart }: Props) {
         <div className="setup-logo">🎲</div>
         <h1 className="setup-title">{i18n.setup.heading}</h1>
         <p className="setup-subtitle">{i18n.setup.subtitle}</p>
+
         <form className="setup-form" onSubmit={handleSubmit}>
-          <div className="setup-field">
-            <label className="setup-label p1-label">{i18n.setup.player1Label}</label>
-            <input
-              className="setup-input p1-input"
-              type="text"
-              value={p1}
-              onChange={(e) => setP1(e.target.value)}
-              placeholder={i18n.setup.player1Placeholder}
-              maxLength={16}
-            />
+          <div className="setup-count-row">
+            <span className="setup-count-label">{i18n.setup.playerCountLabel}</span>
+            <div className="setup-count-ctrl">
+              <button
+                type="button"
+                className="count-btn"
+                onClick={() => handleCountChange(-1)}
+                disabled={playerCount <= MIN_PLAYERS}
+              >
+                −
+              </button>
+              <span className="count-value">{playerCount}인</span>
+              <button
+                type="button"
+                className="count-btn"
+                onClick={() => handleCountChange(1)}
+                disabled={playerCount >= MAX_PLAYERS}
+              >
+                +
+              </button>
+            </div>
           </div>
-          <div className="setup-vs">VS</div>
-          <div className="setup-field">
-            <label className="setup-label p2-label">{i18n.setup.player2Label}</label>
-            <input
-              className="setup-input p2-input"
-              type="text"
-              value={p2}
-              onChange={(e) => setP2(e.target.value)}
-              placeholder={i18n.setup.player2Placeholder}
-              maxLength={16}
-            />
+
+          <div className="setup-players">
+            {Array.from({ length: playerCount }, (_, i) => (
+              <div key={i} className="setup-field">
+                <label className={`setup-label player-label--${PLAYER_COLORS[i]}`}>
+                  {i18n.setup.playerNameLabel(i + 1)}
+                </label>
+                <input
+                  className={`setup-input player-input--${PLAYER_COLORS[i]}`}
+                  type="text"
+                  value={names[i]}
+                  onChange={(e) => setName(i, e.target.value)}
+                  placeholder={i18n.setup.playerNamePlaceholder(i + 1)}
+                  maxLength={16}
+                />
+              </div>
+            ))}
           </div>
+
           <button type="submit" className="setup-start-btn">
             {i18n.setup.startButton}
           </button>

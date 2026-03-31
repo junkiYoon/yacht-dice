@@ -37,12 +37,13 @@ export interface PlayerScores {
 
 export interface GameState {
   id: string;
-  currentPlayer: 0 | 1;
+  playerCount: number;
+  currentPlayer: number;
   rollCount: number;
   canRoll: boolean;
   dice: DiceState[];
-  players: [PlayerScores, PlayerScores];
+  players: PlayerScores[];
   potentialScores: Record<Category, number> | null;
   isFinished: boolean;
-  winner: number | null;
+  winners: number[] | null;
 }

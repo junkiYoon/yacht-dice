@@ -4,10 +4,11 @@ import { t } from '../../i18n';
 import { Category, GameState } from '../../types/game';
 import DiceArea from '../DiceArea';
 import ScoreSheet from '../ScoreSheet';
+import TurnAnnouncement from '../TurnAnnouncement';
 import './styles.css';
 
 interface Props {
-  playerNames: [string, string];
+  playerNames: string[];
   onGameUpdate: (state: GameState) => void;
 }
 
@@ -16,17 +17,29 @@ export default function GameBoard({ playerNames, onGameUpdate }: Props) {
   const [gameState, setGameState] = useState<GameState | null>(null);
   const [rolling, setRolling] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [announcement, setAnnouncement] = useState<{ player: number; key: number } | null>(null);
+
   const gameIdRef = useRef<string | null>(null);
+  const prevPlayerRef = useRef<number | null>(null);
 
   useEffect(() => {
-    gameApi.createGame().then((state) => {
+    gameApi.createGame(playerNames.length).then((state) => {
       gameIdRef.current = state.id;
+      prevPlayerRef.current = state.currentPlayer;
       setGameState(state);
     });
   }, []);
 
   function update(state: GameState) {
     setGameState(state);
+
+    if (!state.isFinished && prevPlayerRef.current !== null && prevPlayerRef.current !== state.currentPlayer) {
+      const nextPlayer = state.currentPlayer;
+      setAnnouncement((prev) => ({ player: nextPlayer, key: (prev?.key ?? 0) + 1 }));
+      setTimeout(() => setAnnouncement(null), 2200);
+    }
+    prevPlayerRef.current = state.currentPlayer;
+
     if (state.isFinished) {
       onGameUpdate(state);
     }
@@ -43,7 +56,7 @@ export default function GameBoard({ playerNames, onGameUpdate }: Props) {
       const msg = (e as { response?: { data?: { message?: string } } })?.response?.data?.message;
       setError(msg ?? i18n.errors.serverError);
     } finally {
-      setTimeout(() => setRolling(false), 350);
+      setTimeout(() => setRolling(false), 700);
     }
   }
 
@@ -80,17 +93,17 @@ export default function GameBoard({ playerNames, onGameUpdate }: Props) {
     );
   }
 
-  const { currentPlayer, rollCount } = gameState;
-  const currentName = playerNames[currentPlayer];
+  const { currentPlayer } = gameState;
 
   return (
     <div className="game-board">
-      <header className="board-header">
-        <h1 className="board-title">{i18n.title}</h1>
-        <div className={`turn-indicator turn-indicator--p${currentPlayer + 1}`}>
-          {i18n.game.turn(currentName)}
-        </div>
-      </header>
+      {announcement && (
+        <TurnAnnouncement
+          key={announcement.key}
+          playerName={playerNames[announcement.player]}
+          playerIndex={announcement.player}
+        />
+      )}
 
       {error && (
         <div className="board-error" onClick={() => setError(null)}>
@@ -98,39 +111,34 @@ export default function GameBoard({ playerNames, onGameUpdate }: Props) {
         </div>
       )}
 
-      <main className="board-main">
-        <section className="board-scores">
-          <ScoreSheet
-            playerIndex={0}
-            playerName={playerNames[0]}
-            scores={gameState.players[0]}
-            isCurrentPlayer={currentPlayer === 0}
-            potentialScores={currentPlayer === 0 ? gameState.potentialScores : null}
-            onScore={handleScore}
-            rollCount={rollCount}
-            gameState={gameState}
-          />
-          <ScoreSheet
-            playerIndex={1}
-            playerName={playerNames[1]}
-            scores={gameState.players[1]}
-            isCurrentPlayer={currentPlayer === 1}
-            potentialScores={currentPlayer === 1 ? gameState.potentialScores : null}
-            onScore={handleScore}
-            rollCount={rollCount}
-            gameState={gameState}
-          />
-        </section>
+      <div className="board-layout">
+        {/* Left sidebar: score sheet */}
+        <aside className="board-sidebar">
+          <div className="sidebar-header">
+            <span className="sidebar-title">{i18n.title}</span>
+            <span className={`turn-badge turn-badge--p${Math.min(currentPlayer + 1, 6)}`}>
+              {i18n.game.turn(playerNames[currentPlayer])}
+            </span>
+          </div>
+          <div className="sidebar-sheet">
+            <ScoreSheet
+              playerNames={playerNames}
+              gameState={gameState}
+              onScore={handleScore}
+            />
+          </div>
+        </aside>
 
-        <section className="board-dice-section">
+        {/* Right: wooden table + felt tray */}
+        <main className="board-table">
           <DiceArea
             gameState={gameState}
             rolling={rolling}
             onRoll={handleRoll}
             onTogglePin={handleTogglePin}
           />
-        </section>
-      </main>
+        </main>
+      </div>
     </div>
   );
 }

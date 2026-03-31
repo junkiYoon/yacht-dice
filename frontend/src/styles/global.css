@@ -5,30 +5,63 @@
 }
 
 :root {
-  --color-bg: #1a1a2e;
-  --color-surface: #16213e;
-  --color-surface-2: #0f3460;
-  --color-accent: #e94560;
+  /* Table / background */
+  --color-table:        #b8722a;
+  --color-table-light:  #c98338;
+  --color-table-dark:   #9a5e1e;
+
+  /* Felt tray */
+  --color-felt:         #8b1212;
+  --color-felt-center:  #a31818;
+
+  /* Tray border (metallic) */
+  --color-metal-light:  #c8c8c8;
+  --color-metal:        #909090;
+  --color-metal-dark:   #585858;
+
+  /* Sidebar / score sheet */
+  --color-sidebar:      #18181e;
+  --color-sidebar-row:  #1e1e28;
+  --color-sidebar-alt:  #222230;
+  --color-section-hd:   #2a2a3a;
+  --color-border:       #32324a;
+
+  /* Score cells */
+  --color-available:    #ffe066;
+  --color-available-fg: #1a1a00;
+  --color-scored:       #e8e8e8;
+  --color-bonus-earned: #7dde7d;
+
+  /* Players */
+  --color-p1:  #4fc3f7;
+  --color-p2:  #ff8a65;
+  --color-p3:  #a5d6a7;
+  --color-p4:  #ce93d8;
+  --color-p5:  #ffcc02;
+  --color-p6:  #80deea;
+
+  /* Text */
+  --color-text:         #e8e8e8;
+  --color-text-muted:   #888;
+  --color-text-dim:     #555;
+
+  /* Misc */
+  --color-accent:       #e94560;
   --color-accent-hover: #c73652;
-  --color-p1: #4fc3f7;
-  --color-p2: #ff8a65;
-  --color-text: #e0e0e0;
-  --color-text-muted: #9e9e9e;
-  --color-border: #2a2a4a;
-  --color-success: #66bb6a;
-  --color-disabled: #424242;
-  --radius: 8px;
-  --radius-lg: 16px;
-  --shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+  --color-success:      #66bb6a;
+  --radius:             8px;
+  --radius-lg:          16px;
+  --shadow:             0 4px 20px rgba(0, 0, 0, 0.5);
 }
 
 html, body {
   height: 100%;
-  font-family: 'Segoe UI', 'Apple SD Gothic Neo', sans-serif;
-  background: var(--color-bg);
+  font-family: 'Segoe UI', 'Apple SD Gothic Neo', 'Nanum Gothic', sans-serif;
+  background: var(--color-table);
   color: var(--color-text);
   font-size: 14px;
   line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
 }
 
 #root {
@@ -46,12 +79,11 @@ button {
   border: none;
   font-family: inherit;
   font-size: inherit;
-  border-radius: var(--radius);
-  transition: background 0.15s, transform 0.1s, opacity 0.15s;
+  transition: background 0.15s, transform 0.1s, opacity 0.15s, box-shadow 0.15s;
 }
 
 button:active:not(:disabled) {
-  transform: scale(0.97);
+  transform: scale(0.96);
 }
 
 button:disabled {

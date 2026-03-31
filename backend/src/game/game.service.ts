@@ -1,13 +1,13 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { Category } from './domain/board';
-import { GameState, TwoPlayerGame } from './domain/two-player-game';
+import { GameState, MultiPlayerGame } from './domain/multi-player-game';
 
 @Injectable()
 export class GameService {
-  private games = new Map<string, TwoPlayerGame>();
+  private games = new Map<string, MultiPlayerGame>();
 
-  create(): GameState {
-    const game = new TwoPlayerGame();
+  create(playerCount: number): GameState {
+    const game = new MultiPlayerGame(playerCount);
     this.games.set(game.id, game);
     return game.getState();
   }
@@ -35,7 +35,7 @@ export class GameService {
     return game.getState();
   }
 
-  private findGame(id: string): TwoPlayerGame {
+  private findGame(id: string): MultiPlayerGame {
     const game = this.games.get(id);
     if (!game) {
       throw new NotFoundException(`게임을 찾을 수 없습니다: ${id}`);

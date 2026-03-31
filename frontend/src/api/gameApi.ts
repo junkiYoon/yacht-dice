@@ -6,8 +6,8 @@ const api = axios.create({
 });
 
 export const gameApi = {
-  createGame: (): Promise<GameState> =>
-    api.post<GameState>('/game').then((r) => r.data),
+  createGame: (playerCount: number): Promise<GameState> =>
+    api.post<GameState>('/game', { playerCount }).then((r) => r.data),
 
   getState: (id: string): Promise<GameState> =>
     api.get<GameState>(`/game/${id}`).then((r) => r.data),

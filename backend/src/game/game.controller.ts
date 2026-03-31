@@ -7,6 +7,7 @@ import {
   Post,
 } from '@nestjs/common';
 import { GameService } from './game.service';
+import { CreateGameDto } from './dto/create-game.dto';
 import { PinDiceDto } from './dto/pin-dice.dto';
 import { ScoreDto } from './dto/score.dto';
 
@@ -15,8 +16,9 @@ export class GameController {
   constructor(private readonly gameService: GameService) {}
 
   @Post()
-  create() {
-    return this.gameService.create();
+  create(@Body() body: CreateGameDto) {
+    const playerCount = Math.max(1, Math.min(6, body.playerCount ?? 2));
+    return this.gameService.create(playerCount);
   }
 
   @Get(':id')
