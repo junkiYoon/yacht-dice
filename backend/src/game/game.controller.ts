@@ -30,8 +30,8 @@ export class GameController {
   roll(@Param('id') id: string) {
     try {
       return this.gameService.roll(id);
-    } catch (e) {
-      throw new BadRequestException(e.message);
+    } catch (e: unknown) {
+      throw new BadRequestException(e instanceof Error ? e.message : '오류가 발생했습니다.');
     }
   }
 
@@ -39,8 +39,8 @@ export class GameController {
   togglePin(@Param('id') id: string, @Body() body: PinDiceDto) {
     try {
       return this.gameService.togglePin(id, body.index);
-    } catch (e) {
-      throw new BadRequestException(e.message);
+    } catch (e: unknown) {
+      throw new BadRequestException(e instanceof Error ? e.message : '오류가 발생했습니다.');
     }
   }
 
@@ -48,8 +48,8 @@ export class GameController {
   score(@Param('id') id: string, @Body() body: ScoreDto) {
     try {
       return this.gameService.score(id, body.category);
-    } catch (e) {
-      throw new BadRequestException(e.message);
+    } catch (e: unknown) {
+      throw new BadRequestException(e instanceof Error ? e.message : '오류가 발생했습니다.');
     }
   }
 }

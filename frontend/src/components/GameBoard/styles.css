@@ -67,6 +67,34 @@
   flex-wrap: wrap;
 }
 
+.sidebar-header-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* ── Help button ─────────────────────────────────── */
+.help-btn {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  font-size: 13px;
+  font-weight: 900;
+  color: var(--pencil);
+  background: rgba(255, 255, 255, 0.55);
+  border: 1.5px solid var(--pencil);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s, color 0.15s;
+  flex-shrink: 0;
+}
+
+.help-btn:hover {
+  background: var(--pencil);
+  color: #fff;
+}
+
 .sidebar-title {
   font-family: 'Caveat', cursive;
   font-size: 22px;

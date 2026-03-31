@@ -1,8 +1,9 @@
 import axios from 'axios';
+import { BACKEND_URL } from '../config';
 import { Category, GameState } from '../types/game';
 
 const api = axios.create({
-  baseURL: 'http://localhost:3000/api',
+  baseURL: `${BACKEND_URL}/api`,
 });
 
 export const gameApi = {

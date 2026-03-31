@@ -12,6 +12,14 @@ export type Category =
   | 'largeStraight'
   | 'yacht';
 
+export const UPPER_CATEGORIES: Category[] = [
+  'aces', 'deuces', 'threes', 'fours', 'fives', 'sixes',
+];
+
+export const LOWER_CATEGORIES: Category[] = [
+  'choice', 'fourOfKind', 'fullHouse', 'smallStraight', 'largeStraight', 'yacht',
+];
+
 export interface DiceState {
   value: number;
   pinned: boolean;

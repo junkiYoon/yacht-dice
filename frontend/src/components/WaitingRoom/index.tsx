@@ -88,7 +88,7 @@ export default function WaitingRoom({ session, onGameStart, onDestroyed }: Props
             {players.map((p) => (
               <li key={p.socketId} className={`player-item player-item--p${Math.min(p.playerIndex + 1, 6)}`}>
                 <span className="player-item-name">{p.name}</span>
-                {p.socketId === session.players[0]?.socketId && (
+                {p.playerIndex === 0 && (
                   <span className="player-item-badge">방장</span>
                 )}
                 {p.socketId === getSocket().id && (

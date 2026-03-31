@@ -3,10 +3,8 @@ import { gameApi } from '../../api/gameApi';
 import { useGameAnnouncement } from '../../hooks/useGameAnnouncement';
 import { t } from '../../i18n';
 import { Category, GameState } from '../../types/game';
-import DiceArea from '../DiceArea';
-import ScoreSheet from '../ScoreSheet';
-import TurnAnnouncement from '../TurnAnnouncement';
-import './styles.css';
+import GameLayout from '../GameLayout';
+import './styles.css'; // board-loading styles
 
 interface Props {
   playerNames: string[];
@@ -16,7 +14,7 @@ interface Props {
 export default function GameBoard({ playerNames, onGameUpdate }: Props) {
   const i18n = t();
   const [gameState, setGameState] = useState<GameState | null>(null);
-  const [rolling, setRolling] = useState(false);
+  const [serverPending, setServerPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const gameIdRef = useRef<string | null>(null);
   const { announcement, checkTurnChange } = useGameAnnouncement();
@@ -37,7 +35,7 @@ export default function GameBoard({ playerNames, onGameUpdate }: Props) {
   async function handleRoll() {
     if (!gameIdRef.current || !gameState?.canRoll) return;
     setError(null);
-    setRolling(true);
+    setServerPending(true);
     try {
       const state = await gameApi.roll(gameIdRef.current);
       update(state);
@@ -45,7 +43,7 @@ export default function GameBoard({ playerNames, onGameUpdate }: Props) {
       const msg = (e as { response?: { data?: { message?: string } } })?.response?.data?.message;
       setError(msg ?? i18n.errors.serverError);
     } finally {
-      setTimeout(() => setRolling(false), 700);
+      setServerPending(false);
     }
   }
 
@@ -82,50 +80,17 @@ export default function GameBoard({ playerNames, onGameUpdate }: Props) {
     );
   }
 
-  const { currentPlayer } = gameState;
-
   return (
-    <div className="game-board">
-      {announcement && (
-        <TurnAnnouncement
-          key={announcement.key}
-          playerName={playerNames[announcement.player]}
-          playerIndex={announcement.player}
-        />
-      )}
-
-      {error && (
-        <div className="board-error" onClick={() => setError(null)}>
-          ⚠️ {error}
-        </div>
-      )}
-
-      <div className="board-layout">
-        <aside className="board-sidebar">
-          <div className="sidebar-header">
-            <span className="sidebar-title">{i18n.title}</span>
-            <span className={`turn-badge turn-badge--p${Math.min(currentPlayer + 1, 6)}`}>
-              {i18n.game.turn(playerNames[currentPlayer])}
-            </span>
-          </div>
-          <div className="sidebar-sheet">
-            <ScoreSheet
-              playerNames={playerNames}
-              gameState={gameState}
-              onScore={handleScore}
-            />
-          </div>
-        </aside>
-
-        <main className="board-table">
-          <DiceArea
-            gameState={gameState}
-            rolling={rolling}
-            onRoll={handleRoll}
-            onTogglePin={handleTogglePin}
-          />
-        </main>
-      </div>
-    </div>
+    <GameLayout
+      playerNames={playerNames}
+      gameState={gameState}
+      serverPending={serverPending}
+      onRoll={handleRoll}
+      onTogglePin={handleTogglePin}
+      onScore={handleScore}
+      announcement={announcement}
+      error={error}
+      onErrorDismiss={() => setError(null)}
+    />
   );
 }

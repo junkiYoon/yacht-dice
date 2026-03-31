@@ -79,27 +79,21 @@ export class RoomService {
 
   roll(socketId: string, code: string): GameRoom {
     const { room, player } = this.getActivePlayer(socketId, code);
-    if (room.game!.getState().currentPlayer !== player.playerIndex) {
-      throw new Error('현재 차례가 아닙니다.');
-    }
+    this.validateTurn(room, player);
     room.game!.roll();
     return room;
   }
 
   togglePin(socketId: string, code: string, index: number): GameRoom {
     const { room, player } = this.getActivePlayer(socketId, code);
-    if (room.game!.getState().currentPlayer !== player.playerIndex) {
-      throw new Error('현재 차례가 아닙니다.');
-    }
+    this.validateTurn(room, player);
     room.game!.togglePin(index);
     return room;
   }
 
   score(socketId: string, code: string, category: Category): GameRoom {
     const { room, player } = this.getActivePlayer(socketId, code);
-    if (room.game!.getState().currentPlayer !== player.playerIndex) {
-      throw new Error('현재 차례가 아닙니다.');
-    }
+    this.validateTurn(room, player);
     room.game!.score(category);
     return room;
   }
@@ -114,6 +108,12 @@ export class RoomService {
       }
     }
     return null;
+  }
+
+  private validateTurn(room: GameRoom, player: RoomPlayer): void {
+    if (room.game!.getState().currentPlayer !== player.playerIndex) {
+      throw new Error('현재 차례가 아닙니다.');
+    }
   }
 
   private findRoom(code: string): GameRoom {

@@ -1,10 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
 import { t } from '../../i18n';
-import { Category, GameState, PlayerScores } from '../../types/game';
+import { Category, GameState, LOWER_CATEGORIES, PlayerScores, UPPER_CATEGORIES } from '../../types/game';
 import './styles.css';
 
-const UPPER_CATEGORIES: Category[] = ['aces', 'deuces', 'threes', 'fours', 'fives', 'sixes'];
-const LOWER_CATEGORIES: Category[] = ['choice', 'fourOfKind', 'fullHouse', 'smallStraight', 'largeStraight', 'yacht'];
 const ALL_CATEGORIES = [...UPPER_CATEGORIES, ...LOWER_CATEGORIES];
 
 interface Props {

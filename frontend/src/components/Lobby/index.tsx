@@ -1,17 +1,10 @@
 import { useEffect, useState } from 'react';
 import { getSocket } from '../../socket/socketClient';
-import { RoomPlayer } from '../../types/online';
+import { OnlineSession, RoomPlayer } from '../../types/online';
 import './styles.css';
 
 interface Props {
-  onEnterRoom: (info: {
-    roomCode: string;
-    playerIndex: number;
-    isHost: boolean;
-    players: RoomPlayer[];
-    maxPlayers: number;
-    playerName: string;
-  }) => void;
+  onEnterRoom: (info: OnlineSession) => void;
   onBack: () => void;
 }
 

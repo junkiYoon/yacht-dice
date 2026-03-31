@@ -10,7 +10,7 @@ import { Server, Socket } from 'socket.io';
 import { Category } from './domain/board';
 import { RoomService } from './room.service';
 
-@WebSocketGateway({ cors: { origin: 'http://localhost:5173' } })
+@WebSocketGateway({ cors: { origin: process.env.CORS_ORIGIN ?? '*' } })
 export class GameGateway implements OnGatewayDisconnect {
   @WebSocketServer()
   server: Server;
@@ -85,12 +85,37 @@ export class GameGateway implements OnGatewayDisconnect {
     }
   }
 
+  /**
+   * Broadcast to others that this player has started shaking the dice.
+   * No game logic — purely a UI sync signal.
+   */
+  @SubscribeMessage('player-rolling')
+  handlePlayerRolling(
+    @ConnectedSocket() client: Socket,
+    @MessageBody() data: { roomCode: string },
+  ) {
+    client.to(data.roomCode).emit('player-rolling');
+  }
+
+  /**
+   * Broadcast to others that this player cancelled the roll animation.
+   */
+  @SubscribeMessage('player-rolling-cancelled')
+  handlePlayerRollingCancelled(
+    @ConnectedSocket() client: Socket,
+    @MessageBody() data: { roomCode: string },
+  ) {
+    client.to(data.roomCode).emit('player-rolling-cancelled');
+  }
+
   @SubscribeMessage('roll')
   handleRoll(
     @ConnectedSocket() client: Socket,
     @MessageBody() data: { roomCode: string },
   ) {
     try {
+      // Other players are already animating (via player-rolling event), so
+      // we process immediately and let the landing animation play for everyone.
       const room = this.roomService.roll(client.id, data.roomCode);
       this.server.to(room.code).emit('game-updated', {
         gameState: room.game!.getState(),

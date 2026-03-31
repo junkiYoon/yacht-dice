@@ -1,9 +1,7 @@
 import { t } from '../../i18n';
-import { Category, GameState } from '../../types/game';
+import { GameState, LOWER_CATEGORIES, UPPER_CATEGORIES } from '../../types/game';
 import './styles.css';
 
-const UPPER_CATEGORIES: Category[] = ['aces', 'deuces', 'threes', 'fours', 'fives', 'sixes'];
-const LOWER_CATEGORIES: Category[] = ['choice', 'fourOfKind', 'fullHouse', 'smallStraight', 'largeStraight', 'yacht'];
 interface Props {
   gameState: GameState;
   playerNames: string[];

@@ -1,13 +1,9 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { getSocket } from '../../socket/socketClient';
 import { useGameAnnouncement } from '../../hooks/useGameAnnouncement';
-import { t } from '../../i18n';
 import { Category, GameState } from '../../types/game';
 import { OnlineSession } from '../../types/online';
-import DiceArea from '../DiceArea';
-import ScoreSheet from '../ScoreSheet';
-import TurnAnnouncement from '../TurnAnnouncement';
-import '../GameBoard/styles.css';
+import GameLayout from '../GameLayout';
 import './styles.css';
 
 interface Props {
@@ -25,25 +21,30 @@ export default function OnlineGameBoard({
   onGameEnd,
   onDestroyed,
 }: Props) {
-  const i18n = t();
   const { roomCode, playerIndex: myIndex } = session;
 
   const [gameState, setGameState] = useState<GameState>(initialGameState);
-  const [rolling, setRolling] = useState(false);
+  const [serverPending, setServerPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const { announcement, checkTurnChange } = useGameAnnouncement();
-  const initializedRef = useRef(false);
 
   useEffect(() => {
-    // Initialise prevPlayer without triggering an announcement on mount
-    initializedRef.current = true;
-
     const socket = getSocket();
+
+    function onPlayerRolling() {
+      // A non-active player started animating — show rolling state on our side too
+      setServerPending(true);
+    }
+
+    function onPlayerRollingCancelled() {
+      // The active player cancelled before committing — stop our animation
+      setServerPending(false);
+    }
 
     function onGameUpdated(data: { gameState: GameState }) {
       const state = data.gameState;
       setGameState(state);
-      setRolling(false);
+      setServerPending(false);
       checkTurnChange(state.currentPlayer, state.isFinished);
       if (state.isFinished) onGameEnd(state);
     }
@@ -53,15 +54,19 @@ export default function OnlineGameBoard({
     }
 
     function onError(data: { message: string }) {
-      setRolling(false);
+      setServerPending(false);
       setError(data.message);
     }
 
+    socket.on('player-rolling', onPlayerRolling);
+    socket.on('player-rolling-cancelled', onPlayerRollingCancelled);
     socket.on('game-updated', onGameUpdated);
     socket.on('room-destroyed', onRoomDestroyed);
     socket.on('error', onError);
 
     return () => {
+      socket.off('player-rolling', onPlayerRolling);
+      socket.off('player-rolling-cancelled', onPlayerRollingCancelled);
       socket.off('game-updated', onGameUpdated);
       socket.off('room-destroyed', onRoomDestroyed);
       socket.off('error', onError);
@@ -71,9 +76,9 @@ export default function OnlineGameBoard({
   const isMyTurn = gameState.currentPlayer === myIndex;
 
   function handleRoll() {
-    if (!isMyTurn || !gameState.canRoll || rolling) return;
+    if (!isMyTurn || !gameState.canRoll || serverPending) return;
     setError(null);
-    setRolling(true);
+    setServerPending(true);
     getSocket().emit('roll', { roomCode });
   }
 
@@ -89,62 +94,41 @@ export default function OnlineGameBoard({
     getSocket().emit('score', { roomCode, category });
   }
 
-  const diceAreaState: GameState = {
-    ...gameState,
-    canRoll: isMyTurn && gameState.canRoll,
-  };
+  /** Notify other players that we started shaking the dice (phase 1) */
+  function handleAnimationStart() {
+    getSocket().emit('player-rolling', { roomCode });
+  }
+
+  /** Notify other players that we cancelled (phase 1 cancelled) */
+  function handleAnimationCancel() {
+    getSocket().emit('player-rolling-cancelled', { roomCode });
+  }
 
   const { currentPlayer } = gameState;
 
-  return (
-    <div className="game-board">
-      {announcement && (
-        <TurnAnnouncement
-          key={announcement.key}
-          playerName={playerNames[announcement.player]}
-          playerIndex={announcement.player}
-        />
-      )}
-
-      {error && (
-        <div className="board-error" onClick={() => setError(null)}>
-          ⚠️ {error}
-        </div>
-      )}
-
-      <div className="board-layout">
-        <aside className="board-sidebar">
-          <div className="sidebar-header">
-            <span className="sidebar-title">{i18n.title}</span>
-            <span className={`turn-badge turn-badge--p${Math.min(currentPlayer + 1, 6)}`}>
-              {i18n.game.turn(playerNames[currentPlayer])}
-            </span>
-          </div>
-          <div className="sidebar-sheet">
-            <ScoreSheet
-              playerNames={playerNames}
-              gameState={gameState}
-              onScore={handleScore}
-            />
-          </div>
-        </aside>
-
-        <main className="board-table">
-          {!isMyTurn && (
-            <div className="not-my-turn-overlay">
-              <span className="not-my-turn-text">
-                {playerNames[currentPlayer]}의 차례를 기다리는 중...
-              </span>
-            </div>
-          )}
-          <DiceArea
-            gameState={diceAreaState}
-            rolling={rolling}
-            onRoll={handleRoll}
-            onTogglePin={handleTogglePin}
-          />
-        </main>
-      </div>
+  const notMyTurnOverlay = !isMyTurn ? (
+    <div className="not-my-turn-overlay">
+      <span className="not-my-turn-text">
+        {playerNames[currentPlayer]}의 차례를 기다리는 중...
+      </span>
     </div>
+  ) : undefined;
+
+  return (
+    <GameLayout
+      playerNames={playerNames}
+      gameState={gameState}
+      canRollOverride={isMyTurn && gameState.canRoll}
+      serverPending={serverPending}
+      onRoll={handleRoll}
+      onTogglePin={handleTogglePin}
+      onScore={handleScore}
+      onAnimationStart={handleAnimationStart}
+      onAnimationCancel={handleAnimationCancel}
+      announcement={announcement}
+      error={error}
+      onErrorDismiss={() => setError(null)}
+      tableOverlay={notMyTurnOverlay}
+    />
   );
 }
