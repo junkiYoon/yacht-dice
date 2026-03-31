@@ -84,9 +84,7 @@ export class Calculator {
       [2, 3, 4, 5],
       [3, 4, 5, 6],
     ];
-    return sequences.some((seq) =>
-      seq.every((n) => unique.includes(n)),
-    );
+    return sequences.some((seq) => seq.every((n) => unique.includes(n)));
   }
 
   private largeStraight(dice: number[]): boolean {

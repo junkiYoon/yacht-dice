@@ -1,20 +1,23 @@
 import { useEffect, useState } from 'react';
 import { getSocket } from '../../socket/socketClient';
-import { OnlineSession, RoomPlayer } from '../../types/online';
+import { OnlineSession, PublicRoom, RoomPlayer } from '../../types/online';
 import './styles.css';
 
 interface Props {
   onEnterRoom: (info: OnlineSession) => void;
   onBack: () => void;
+  defaultPlayerName?: string;
+  initialRoomCode?: string;
 }
 
-export default function Lobby({ onEnterRoom, onBack }: Props) {
-  const [tab, setTab] = useState<'create' | 'join'>('create');
-  const [playerName, setPlayerName] = useState('');
+export default function Lobby({ onEnterRoom, onBack, defaultPlayerName, initialRoomCode }: Props) {
+  const [tab, setTab] = useState<'create' | 'join'>(initialRoomCode ? 'join' : 'create');
+  const [playerName, setPlayerName] = useState(defaultPlayerName ?? '');
   const [maxPlayers, setMaxPlayers] = useState(2);
-  const [roomCode, setRoomCode] = useState('');
+  const [roomCode, setRoomCode] = useState(initialRoomCode ?? '');
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [rooms, setRooms] = useState<PublicRoom[]>([]);
 
   useEffect(() => {
     const socket = getSocket();
@@ -46,14 +49,29 @@ export default function Lobby({ onEnterRoom, onBack }: Props) {
       setError(data.message);
     }
 
+    function onRoomsListed(data: { rooms: PublicRoom[] }) {
+      setRooms(data.rooms);
+    }
+
+    function onRoomsUpdated(updatedRooms: PublicRoom[]) {
+      setRooms(updatedRooms);
+    }
+
     socket.on('room-created', onRoomCreated);
     socket.on('room-joined', onRoomJoined);
     socket.on('error', onError);
+    socket.on('rooms-listed', onRoomsListed);
+    socket.on('rooms-updated', onRoomsUpdated);
+
+    // Request initial room list
+    socket.emit('list-rooms');
 
     return () => {
       socket.off('room-created', onRoomCreated);
       socket.off('room-joined', onRoomJoined);
       socket.off('error', onError);
+      socket.off('rooms-listed', onRoomsListed);
+      socket.off('rooms-updated', onRoomsUpdated);
     };
   }, [playerName, onEnterRoom]);
 
@@ -163,6 +181,23 @@ export default function Lobby({ onEnterRoom, onBack }: Props) {
             </button>
           </form>
         )}
+
+        <div className="room-list">
+          <div className="room-list-header">
+            <span>공개 방 목록</span>
+            <button type="button" className="room-list-refresh" onClick={() => getSocket().emit('list-rooms')}>새로고침</button>
+          </div>
+          {rooms.length === 0 ? (
+            <p className="room-list-empty">참가 가능한 방이 없습니다</p>
+          ) : (
+            rooms.map(room => (
+              <button key={room.code} type="button" className="room-item" onClick={() => { setTab('join'); setRoomCode(room.code); setError(null); }}>
+                <span className="room-item-code">{room.code}</span>
+                <span className="room-item-count">{room.playerCount} / {room.maxPlayers}명</span>
+              </button>
+            ))
+          )}
+        </div>
       </div>
     </div>
   );

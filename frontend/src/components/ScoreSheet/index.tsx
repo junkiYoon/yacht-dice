@@ -40,7 +40,7 @@ function ScoreCell({
         'cell-score',
         `cell-p${Math.min(playerIndex + 1, 6)}`,
         scored !== null ? 'cell-scored' : '',
-        canScore ? 'cell-available' : '',
+        canScore && (potential ?? 0) > 0 ? 'cell-available' : canScore && potential !== undefined ? 'cell-sacrifice' : '',
         isNew ? 'cell-newly-scored' : '',
       ].filter(Boolean).join(' ')}
       onClick={() => canScore && onScore(category)}
@@ -50,7 +50,7 @@ function ScoreCell({
         <span className={`val-scored ${isNew ? 'val-newly-written' : ''}`}>
           {scored}
         </span>
-      ) : canScore && potential !== undefined ? (
+      ) : canScore && potential !== undefined && potential > 0 ? (
         <span className="val-potential">{potential}</span>
       ) : (
         <span className="val-empty">—</span>

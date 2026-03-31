@@ -28,9 +28,9 @@ const LOWER_RULES = [
   },
   {
     name: '풀하우스',
-    desc: '3개 + 2개 조합',
-    example: '3·3·3·5·5 → 25점',
-    score: '25점',
+    desc: '서로 다른 숫자로 3개 + 2개 조합',
+    example: '3·3·3·5·5 → 19점',
+    score: '합계',
   },
   {
     name: '스몰 스트레이트',
@@ -46,7 +46,7 @@ const LOWER_RULES = [
   },
   {
     name: '요트',
-    desc: '모두 같은 숫자',
+    desc: '모두 같은 숫자 (5개)',
     example: '6·6·6·6·6 → 50점',
     score: '50점',
   },

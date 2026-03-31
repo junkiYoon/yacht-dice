@@ -12,3 +12,9 @@ export interface OnlineSession {
   maxPlayers: number;
   playerName: string;
 }
+
+export interface PublicRoom {
+  code: string;
+  playerCount: number;
+  maxPlayers: number;
+}

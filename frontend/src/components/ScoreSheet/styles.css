@@ -155,6 +155,10 @@ thead th {
 }
 .cell-available:hover { background: rgba(255, 235, 100, 0.7); }
 
+/* ── Sacrifice cell (0-point score) ──────────────── */
+.cell-sacrifice { cursor: pointer; }
+.cell-sacrifice:hover { background: rgba(180, 180, 180, 0.12); }
+
 /* ── Scored cell (written-in look) ───────────────── */
 .cell-scored { color: var(--ink) !important; }
 

@@ -36,6 +36,7 @@ export class GameGateway implements OnGatewayDisconnect {
         players: room.players,
         maxPlayers: room.maxPlayers,
       });
+      this.broadcastRoomsUpdate();
     } catch (e) {
       this.emitError(client, e);
     }
@@ -63,6 +64,7 @@ export class GameGateway implements OnGatewayDisconnect {
         maxPlayers: room.maxPlayers,
       });
       client.to(room.code).emit('room-updated', { players: room.players });
+      this.broadcastRoomsUpdate();
     } catch (e) {
       this.emitError(client, e);
     }
@@ -80,6 +82,7 @@ export class GameGateway implements OnGatewayDisconnect {
         gameState: room.game!.getState(),
         playerNames,
       });
+      this.broadcastRoomsUpdate();
     } catch (e) {
       this.emitError(client, e);
     }
@@ -163,13 +166,29 @@ export class GameGateway implements OnGatewayDisconnect {
     }
   }
 
+  @SubscribeMessage('list-rooms')
+  handleListRooms(@ConnectedSocket() client: Socket) {
+    client.emit('rooms-listed', { rooms: this.roomService.listRooms() });
+  }
+
   handleDisconnect(client: Socket) {
     const result = this.roomService.removePlayerBySocket(client.id);
     if (result) {
-      this.server.to(result.room.code).emit('room-destroyed', {
-        reason: `'${result.player.name}'의 연결이 끊어졌습니다.`,
-      });
+      if (result.destroyed) {
+        this.server.to(result.room.code).emit('room-destroyed', {
+          reason: `'${result.player.name}'의 연결이 끊어졌습니다.`,
+        });
+      } else {
+        this.server.to(result.room.code).emit('room-updated', {
+          players: result.room.players,
+        });
+      }
+      this.broadcastRoomsUpdate();
     }
+  }
+
+  private broadcastRoomsUpdate() {
+    this.server.emit('rooms-updated', this.roomService.listRooms());
   }
 
   private emitError(client: Socket, e: unknown) {

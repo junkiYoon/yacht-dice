@@ -17,10 +17,23 @@ export interface GameRoom {
   status: 'waiting' | 'playing';
 }
 
+export interface PublicRoom {
+  code: string;
+  playerCount: number;
+  maxPlayers: number;
+}
+
+export interface RemoveResult {
+  room: GameRoom;
+  player: RoomPlayer;
+  destroyed: boolean;
+}
+
 function generateCode(): string {
   const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-  return Array.from({ length: 6 }, () =>
-    chars[Math.floor(Math.random() * chars.length)],
+  return Array.from(
+    { length: 6 },
+    () => chars[Math.floor(Math.random() * chars.length)],
   ).join('');
 }
 
@@ -28,7 +41,11 @@ function generateCode(): string {
 export class RoomService {
   private rooms = new Map<string, GameRoom>();
 
-  createRoom(socketId: string, maxPlayers: number, playerName: string): GameRoom {
+  createRoom(
+    socketId: string,
+    maxPlayers: number,
+    playerName: string,
+  ): GameRoom {
     let code: string;
     do {
       code = generateCode();
@@ -98,13 +115,48 @@ export class RoomService {
     return room;
   }
 
-  /** Removes the player from any room they are in. Returns the room if found. */
-  removePlayerBySocket(socketId: string): { room: GameRoom; player: RoomPlayer } | null {
+  listRooms(): PublicRoom[] {
+    const result: PublicRoom[] = [];
+    for (const room of this.rooms.values()) {
+      if (room.status === 'waiting') {
+        result.push({
+          code: room.code,
+          playerCount: room.players.length,
+          maxPlayers: room.maxPlayers,
+        });
+      }
+    }
+    return result;
+  }
+
+  /** Removes the player from any room they are in. Returns RemoveResult or null. */
+  removePlayerBySocket(socketId: string): RemoveResult | null {
     for (const room of this.rooms.values()) {
       const player = room.players.find((p) => p.socketId === socketId);
       if (player) {
-        this.rooms.delete(room.code);
-        return { room, player };
+        // If game is playing, destroy the room
+        if (room.status === 'playing') {
+          this.rooms.delete(room.code);
+          return { room, player, destroyed: true };
+        }
+
+        // Waiting: if last player, destroy room
+        if (room.players.length <= 1) {
+          this.rooms.delete(room.code);
+          return { room, player, destroyed: true };
+        }
+
+        // Waiting: others remain — remove player, reindex, transfer host if needed
+        room.players = room.players.filter((p) => p.socketId !== socketId);
+        // Reindex player indices to be 0-based sequential
+        room.players.forEach((p, i) => {
+          p.playerIndex = i;
+        });
+        // Transfer host if needed
+        if (room.hostSocketId === socketId) {
+          room.hostSocketId = room.players[0].socketId;
+        }
+        return { room, player, destroyed: false };
       }
     }
     return null;

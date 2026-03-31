@@ -9,12 +9,13 @@ const PLAYER_COLORS = ['p1', 'p2', 'p3', 'p4', 'p5', 'p6'];
 interface Props {
   onStart: (names: string[]) => void;
   onBack: () => void;
+  defaultName?: string;
 }
 
-export default function GameSetup({ onStart, onBack }: Props) {
+export default function GameSetup({ onStart, onBack, defaultName }: Props) {
   const i18n = t();
   const [playerCount, setPlayerCount] = useState(2);
-  const [names, setNames] = useState<string[]>(['', '', '', '', '', '']);
+  const [names, setNames] = useState<string[]>([defaultName ?? '', '', '', '', '', '']);
 
   function setName(index: number, value: string) {
     setNames((prev) => {

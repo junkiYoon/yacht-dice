@@ -105,19 +105,18 @@
 .turn-badge {
   font-size: 12px;
   font-weight: 800;
-  padding: 4px 12px;
+  padding: 5px 14px;
   border-radius: 20px;
-  background: rgba(255,255,255,0.6);
-  border: 2px solid currentColor;
-  backdrop-filter: blur(4px);
+  color: #fff;
+  border: 2px solid rgba(255,255,255,0.3);
 }
 
-.turn-badge--p1 { color: var(--p1); }
-.turn-badge--p2 { color: var(--p2); }
-.turn-badge--p3 { color: var(--p3); }
-.turn-badge--p4 { color: var(--p4); }
-.turn-badge--p5 { color: var(--p5); }
-.turn-badge--p6 { color: var(--p6); }
+.turn-badge--p1 { background: var(--p1); }
+.turn-badge--p2 { background: var(--p2); }
+.turn-badge--p3 { background: var(--p3); }
+.turn-badge--p4 { background: var(--p4); }
+.turn-badge--p5 { background: var(--p5); }
+.turn-badge--p6 { background: var(--p6); }
 
 .sidebar-sheet {
   flex: 1;

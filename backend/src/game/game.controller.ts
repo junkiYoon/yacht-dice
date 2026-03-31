@@ -31,7 +31,9 @@ export class GameController {
     try {
       return this.gameService.roll(id);
     } catch (e: unknown) {
-      throw new BadRequestException(e instanceof Error ? e.message : '오류가 발생했습니다.');
+      throw new BadRequestException(
+        e instanceof Error ? e.message : '오류가 발생했습니다.',
+      );
     }
   }
 
@@ -40,7 +42,9 @@ export class GameController {
     try {
       return this.gameService.togglePin(id, body.index);
     } catch (e: unknown) {
-      throw new BadRequestException(e instanceof Error ? e.message : '오류가 발생했습니다.');
+      throw new BadRequestException(
+        e instanceof Error ? e.message : '오류가 발생했습니다.',
+      );
     }
   }
 
@@ -49,7 +53,9 @@ export class GameController {
     try {
       return this.gameService.score(id, body.category);
     } catch (e: unknown) {
-      throw new BadRequestException(e instanceof Error ? e.message : '오류가 발생했습니다.');
+      throw new BadRequestException(
+        e instanceof Error ? e.message : '오류가 발생했습니다.',
+      );
     }
   }
 }

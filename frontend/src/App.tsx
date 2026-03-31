@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { GameState } from './types/game';
 import { OnlineSession } from './types/online';
 import { disconnectSocket } from './socket/socketClient';
+import NicknamePage from './components/NicknamePage';
 import ModeSelect from './components/ModeSelect';
 import GameSetup from './components/GameSetup';
 import GameBoard from './components/GameBoard';
@@ -11,6 +12,7 @@ import OnlineGameBoard from './components/OnlineGameBoard';
 import GameResult from './components/GameResult';
 
 type Screen =
+  | 'nickname'
   | 'mode-select'
   | 'setup'
   | 'game'
@@ -19,8 +21,22 @@ type Screen =
   | 'online-game'
   | 'result';
 
+function getInitialScreen(nickname: string | null, pendingRoomCode: string | null): Screen {
+  if (!nickname) return 'nickname';
+  if (pendingRoomCode) return 'lobby';
+  return 'mode-select';
+}
+
 export default function App() {
-  const [screen, setScreen] = useState<Screen>('mode-select');
+  const [nickname, setNickname] = useState<string>(() => localStorage.getItem('nickname') ?? '');
+  const [pendingRoomCode] = useState<string | null>(() => {
+    const params = new URLSearchParams(window.location.search);
+    return params.get('room');
+  });
+
+  const [screen, setScreen] = useState<Screen>(() =>
+    getInitialScreen(localStorage.getItem('nickname'), new URLSearchParams(window.location.search).get('room'))
+  );
   const [isOnline, setIsOnline] = useState(false);
 
   // Local play state
@@ -34,6 +50,16 @@ export default function App() {
   // Shared result state
   const [resultState, setResultState] = useState<GameState | null>(null);
   const [resultPlayerNames, setResultPlayerNames] = useState<string[]>([]);
+
+  /* ── Nickname flow ───────────────────────────────── */
+  function handleNicknameConfirm(name: string) {
+    setNickname(name);
+    if (pendingRoomCode) {
+      setScreen('lobby');
+    } else {
+      setScreen('mode-select');
+    }
+  }
 
   /* ── Local flow ──────────────────────────────────── */
   function handleLocalStart(names: string[]) {
@@ -89,6 +115,10 @@ export default function App() {
 
   return (
     <div className="app">
+      {screen === 'nickname' && (
+        <NicknamePage onConfirm={handleNicknameConfirm} />
+      )}
+
       {screen === 'mode-select' && (
         <ModeSelect
           onLocal={() => setScreen('setup')}
@@ -97,7 +127,11 @@ export default function App() {
       )}
 
       {screen === 'setup' && (
-        <GameSetup onStart={handleLocalStart} onBack={() => setScreen('mode-select')} />
+        <GameSetup
+          onStart={handleLocalStart}
+          onBack={() => setScreen('mode-select')}
+          defaultName={nickname}
+        />
       )}
 
       {screen === 'game' && (
@@ -111,6 +145,8 @@ export default function App() {
         <Lobby
           onEnterRoom={handleEnterRoom}
           onBack={() => setScreen('mode-select')}
+          defaultPlayerName={nickname}
+          initialRoomCode={pendingRoomCode ?? undefined}
         />
       )}
 

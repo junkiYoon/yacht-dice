@@ -17,6 +17,14 @@ export default function WaitingRoom({ session, onGameStart, onDestroyed }: Props
 
   const { roomCode, isHost, maxPlayers } = session;
 
+  // Update URL on mount; restore on unmount
+  useEffect(() => {
+    history.replaceState(null, '', `?room=${roomCode}`);
+    return () => {
+      history.replaceState(null, '', window.location.pathname);
+    };
+  }, [roomCode]);
+
   useEffect(() => {
     const socket = getSocket();
 
@@ -50,7 +58,8 @@ export default function WaitingRoom({ session, onGameStart, onDestroyed }: Props
   }, [onGameStart, onDestroyed]);
 
   function handleCopy() {
-    navigator.clipboard.writeText(roomCode).then(() => {
+    const shareUrl = `${window.location.origin}?room=${roomCode}`;
+    navigator.clipboard.writeText(shareUrl).then(() => {
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     });
@@ -73,7 +82,7 @@ export default function WaitingRoom({ session, onGameStart, onDestroyed }: Props
           <div className="room-code-row">
             <span className="room-code">{roomCode}</span>
             <button className="copy-btn" onClick={handleCopy}>
-              {copied ? '✓ 복사됨' : '복사'}
+              {copied ? '✓ 링크 복사됨' : '링크 복사'}
             </button>
           </div>
           <span className="room-code-hint">친구에게 이 코드를 알려주세요</span>
