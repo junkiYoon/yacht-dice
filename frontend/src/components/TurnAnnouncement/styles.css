@@ -47,7 +47,7 @@
 }
 
 .announcement-name {
-  font-family: 'Caveat', cursive;
+  font-family: 'Caveat', 'Gaegu', cursive;
   font-size: 40px;
   font-weight: 700;
   color: currentColor;

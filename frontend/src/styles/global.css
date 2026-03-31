@@ -63,7 +63,7 @@
 
 html, body {
   height: 100%;
-  font-family: 'Nunito', 'Apple SD Gothic Neo', 'Nanum Gothic', sans-serif;
+  font-family: 'Nunito', 'Noto Sans KR', sans-serif;
   background:
     repeating-linear-gradient(
       90deg,

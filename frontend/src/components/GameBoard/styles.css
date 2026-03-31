@@ -96,7 +96,7 @@
 }
 
 .sidebar-title {
-  font-family: 'Caveat', cursive;
+  font-family: 'Caveat', 'Gaegu', cursive;
   font-size: 22px;
   font-weight: 700;
   color: var(--text);

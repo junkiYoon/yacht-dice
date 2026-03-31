@@ -6,18 +6,19 @@ import './styles.css';
 interface Props {
   onEnterRoom: (info: OnlineSession) => void;
   onBack: () => void;
-  defaultPlayerName?: string;
+  playerName: string;
   initialRoomCode?: string;
 }
 
-export default function Lobby({ onEnterRoom, onBack, defaultPlayerName, initialRoomCode }: Props) {
+export default function Lobby({ onEnterRoom, onBack, playerName, initialRoomCode }: Props) {
   const [tab, setTab] = useState<'create' | 'join'>(initialRoomCode ? 'join' : 'create');
-  const [playerName, setPlayerName] = useState(defaultPlayerName ?? '');
   const [maxPlayers, setMaxPlayers] = useState(2);
   const [roomCode, setRoomCode] = useState(initialRoomCode ?? '');
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [rooms, setRooms] = useState<PublicRoom[]>([]);
+
+  const effectiveName = playerName.trim() || '플레이어';
 
   useEffect(() => {
     const socket = getSocket();
@@ -30,7 +31,7 @@ export default function Lobby({ onEnterRoom, onBack, defaultPlayerName, initialR
       maxPlayers: number;
     }) {
       setLoading(false);
-      onEnterRoom({ ...data, playerName: playerName.trim() || '플레이어 1' });
+      onEnterRoom({ ...data, playerName: effectiveName });
     }
 
     function onRoomJoined(data: {
@@ -41,7 +42,7 @@ export default function Lobby({ onEnterRoom, onBack, defaultPlayerName, initialR
       maxPlayers: number;
     }) {
       setLoading(false);
-      onEnterRoom({ ...data, playerName: playerName.trim() || `플레이어 ${data.playerIndex + 1}` });
+      onEnterRoom({ ...data, playerName: effectiveName });
     }
 
     function onError(data: { message: string }) {
@@ -63,7 +64,6 @@ export default function Lobby({ onEnterRoom, onBack, defaultPlayerName, initialR
     socket.on('rooms-listed', onRoomsListed);
     socket.on('rooms-updated', onRoomsUpdated);
 
-    // Request initial room list
     socket.emit('list-rooms');
 
     return () => {
@@ -73,16 +73,13 @@ export default function Lobby({ onEnterRoom, onBack, defaultPlayerName, initialR
       socket.off('rooms-listed', onRoomsListed);
       socket.off('rooms-updated', onRoomsUpdated);
     };
-  }, [playerName, onEnterRoom]);
+  }, [effectiveName, onEnterRoom]);
 
   function handleCreate(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
     setLoading(true);
-    getSocket().emit('create-room', {
-      maxPlayers,
-      playerName: playerName.trim() || '플레이어 1',
-    });
+    getSocket().emit('create-room', { maxPlayers, playerName: effectiveName });
   }
 
   function handleJoin(e: React.FormEvent) {
@@ -95,7 +92,7 @@ export default function Lobby({ onEnterRoom, onBack, defaultPlayerName, initialR
     setLoading(true);
     getSocket().emit('join-room', {
       roomCode: roomCode.trim().toUpperCase(),
-      playerName: playerName.trim() || '플레이어',
+      playerName: effectiveName,
     });
   }
 
@@ -105,19 +102,6 @@ export default function Lobby({ onEnterRoom, onBack, defaultPlayerName, initialR
         <div className="lobby-header">
           <button className="lobby-back-btn" onClick={onBack}>← 뒤로</button>
           <h1 className="lobby-title">온라인 멀티플레이</h1>
-        </div>
-
-        <div className="lobby-name-field">
-          <label className="lobby-label">내 이름</label>
-          <input
-            className="lobby-input"
-            type="text"
-            value={playerName}
-            onChange={(e) => setPlayerName(e.target.value)}
-            placeholder="이름을 입력하세요"
-            maxLength={16}
-            autoFocus
-          />
         </div>
 
         <div className="lobby-tabs">
@@ -173,6 +157,7 @@ export default function Lobby({ onEnterRoom, onBack, defaultPlayerName, initialR
                 onChange={(e) => setRoomCode(e.target.value.toUpperCase())}
                 placeholder="예: ABC123"
                 maxLength={6}
+                autoFocus
               />
             </div>
             {error && <p className="lobby-error">{error}</p>}
@@ -185,13 +170,24 @@ export default function Lobby({ onEnterRoom, onBack, defaultPlayerName, initialR
         <div className="room-list">
           <div className="room-list-header">
             <span>공개 방 목록</span>
-            <button type="button" className="room-list-refresh" onClick={() => getSocket().emit('list-rooms')}>새로고침</button>
+            <button
+              type="button"
+              className="room-list-refresh"
+              onClick={() => getSocket().emit('list-rooms')}
+            >
+              새로고침
+            </button>
           </div>
           {rooms.length === 0 ? (
             <p className="room-list-empty">참가 가능한 방이 없습니다</p>
           ) : (
-            rooms.map(room => (
-              <button key={room.code} type="button" className="room-item" onClick={() => { setTab('join'); setRoomCode(room.code); setError(null); }}>
+            rooms.map((room) => (
+              <button
+                key={room.code}
+                type="button"
+                className="room-item"
+                onClick={() => { setTab('join'); setRoomCode(room.code); setError(null); }}
+              >
                 <span className="room-item-code">{room.code}</span>
                 <span className="room-item-count">{room.playerCount} / {room.maxPlayers}명</span>
               </button>

@@ -42,7 +42,7 @@
 }
 
 .setup-title {
-  font-family: 'Caveat', cursive;
+  font-family: 'Caveat', 'Gaegu', cursive;
   font-size: 30px;
   font-weight: 700;
   color: var(--text);
@@ -106,7 +106,7 @@
 .count-btn:active:not(:disabled) { transform: translateY(2px); box-shadow: none; }
 
 .count-value {
-  font-family: 'Caveat', cursive;
+  font-family: 'Caveat', 'Gaegu', cursive;
   font-size: 22px;
   font-weight: 700;
   color: var(--text);

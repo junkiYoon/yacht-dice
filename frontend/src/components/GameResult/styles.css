@@ -32,7 +32,7 @@
 }
 
 .result-headline {
-  font-family: 'Caveat', cursive;
+  font-family: 'Caveat', 'Gaegu', cursive;
   font-size: 34px;
   font-weight: 700;
   color: var(--text);
@@ -72,7 +72,7 @@
 }
 
 .result-player-score {
-  font-family: 'Caveat', cursive;
+  font-family: 'Caveat', 'Gaegu', cursive;
   font-size: 36px;
   font-weight: 700;
   color: var(--text);
@@ -147,7 +147,7 @@ tfoot td {
 tfoot td:first-child { padding-left: 12px; }
 
 .result-total {
-  font-family: 'Caveat', cursive;
+  font-family: 'Caveat', 'Gaegu', cursive;
   font-size: 18px !important;
 }
 

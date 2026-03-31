@@ -35,7 +35,7 @@
 .lobby-back-btn:hover { color: var(--text); }
 
 .lobby-title {
-  font-family: 'Caveat', cursive;
+  font-family: 'Caveat', 'Gaegu', cursive;
   font-size: 24px;
   font-weight: 700;
   color: var(--text);
@@ -73,7 +73,7 @@
 }
 
 .lobby-code-input {
-  font-family: 'Caveat', cursive;
+  font-family: 'Caveat', 'Gaegu', cursive;
   font-size: 26px;
   font-weight: 700;
   letter-spacing: 6px;
@@ -147,7 +147,7 @@
 .count-btn:active:not(:disabled) { transform: translateY(2px); box-shadow: none; }
 
 .count-value {
-  font-family: 'Caveat', cursive;
+  font-family: 'Caveat', 'Gaegu', cursive;
   font-size: 22px;
   font-weight: 700;
   color: var(--text);
@@ -255,7 +255,7 @@
 }
 
 .room-item-code {
-  font-family: 'Caveat', cursive;
+  font-family: 'Caveat', 'Gaegu', cursive;
   font-size: 18px;
   font-weight: 700;
   letter-spacing: 3px;

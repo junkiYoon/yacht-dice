@@ -19,12 +19,33 @@
   border-top: 10px solid var(--paper-binding);
 }
 
+/* ── Header ───────────────────────────────────────── */
+.waiting-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.waiting-leave-btn {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-muted);
+  background: none;
+  padding: 4px 0;
+  flex-shrink: 0;
+}
+
+.waiting-leave-btn:hover {
+  color: var(--text);
+}
+
 .waiting-title {
-  font-family: 'Caveat', cursive;
+  font-family: 'Caveat', 'Gaegu', cursive;
   font-size: 28px;
   font-weight: 700;
-  text-align: center;
   color: var(--text);
+  flex: 1;
+  text-align: center;
 }
 
 /* ── Room code ────────────────────────────────────── */
@@ -55,7 +76,7 @@
 }
 
 .room-code {
-  font-family: 'Caveat', cursive;
+  font-family: 'Caveat', 'Gaegu', cursive;
   font-size: 40px;
   font-weight: 700;
   letter-spacing: 6px;
@@ -103,7 +124,7 @@
 }
 
 .players-count {
-  font-family: 'Caveat', cursive;
+  font-family: 'Caveat', 'Gaegu', cursive;
   font-size: 16px;
   font-weight: 700;
   color: var(--text-muted);

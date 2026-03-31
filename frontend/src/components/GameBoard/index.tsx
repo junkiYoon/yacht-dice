@@ -1,10 +1,11 @@
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { gameApi } from '../../api/gameApi';
 import { useGameAnnouncement } from '../../hooks/useGameAnnouncement';
 import { t } from '../../i18n';
 import { Category, GameState } from '../../types/game';
+import { extractApiError } from '../../utils/error';
 import GameLayout from '../GameLayout';
-import './styles.css'; // board-loading styles
+import './styles.css';
 
 interface Props {
   playerNames: string[];
@@ -32,44 +33,41 @@ export default function GameBoard({ playerNames, onGameUpdate }: Props) {
     if (state.isFinished) onGameUpdate(state);
   }
 
-  async function handleRoll() {
+  const handleRoll = useCallback(async () => {
     if (!gameIdRef.current || !gameState?.canRoll) return;
     setError(null);
     setServerPending(true);
     try {
       const state = await gameApi.roll(gameIdRef.current);
       update(state);
-    } catch (e: unknown) {
-      const msg = (e as { response?: { data?: { message?: string } } })?.response?.data?.message;
-      setError(msg ?? i18n.errors.serverError);
+    } catch (e) {
+      setError(extractApiError(e, i18n.errors.serverError));
     } finally {
       setServerPending(false);
     }
-  }
+  }, [gameState?.canRoll]);
 
-  async function handleTogglePin(index: number) {
+  const handleTogglePin = useCallback(async (index: number) => {
     if (!gameIdRef.current) return;
     setError(null);
     try {
       const state = await gameApi.togglePin(gameIdRef.current, index);
       update(state);
-    } catch (e: unknown) {
-      const msg = (e as { response?: { data?: { message?: string } } })?.response?.data?.message;
-      setError(msg ?? i18n.errors.serverError);
+    } catch (e) {
+      setError(extractApiError(e, i18n.errors.serverError));
     }
-  }
+  }, []);
 
-  async function handleScore(category: Category) {
-    if (!gameIdRef.current || !gameState) return;
+  const handleScore = useCallback(async (category: Category) => {
+    if (!gameIdRef.current) return;
     setError(null);
     try {
       const state = await gameApi.score(gameIdRef.current, category);
       update(state);
-    } catch (e: unknown) {
-      const msg = (e as { response?: { data?: { message?: string } } })?.response?.data?.message;
-      setError(msg ?? i18n.errors.serverError);
+    } catch (e) {
+      setError(extractApiError(e, i18n.errors.serverError));
     }
-  }
+  }, []);
 
   if (!gameState) {
     return (

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import { GameState } from './types/game';
 import { OnlineSession } from './types/online';
 import { disconnectSocket } from './socket/socketClient';
@@ -10,6 +10,7 @@ import Lobby from './components/Lobby';
 import WaitingRoom from './components/WaitingRoom';
 import OnlineGameBoard from './components/OnlineGameBoard';
 import GameResult from './components/GameResult';
+import ProfileBadge from './components/ProfileBadge';
 
 type Screen =
   | 'nickname'
@@ -20,6 +21,8 @@ type Screen =
   | 'waiting'
   | 'online-game'
   | 'result';
+
+const SCREENS_WITH_PROFILE: Screen[] = ['mode-select', 'setup', 'lobby', 'waiting'];
 
 function getInitialScreen(nickname: string | null, pendingRoomCode: string | null): Screen {
   if (!nickname) return 'nickname';
@@ -54,11 +57,11 @@ export default function App() {
   /* ── Nickname flow ───────────────────────────────── */
   function handleNicknameConfirm(name: string) {
     setNickname(name);
-    if (pendingRoomCode) {
-      setScreen('lobby');
-    } else {
-      setScreen('mode-select');
-    }
+    setScreen(pendingRoomCode ? 'lobby' : 'mode-select');
+  }
+
+  function handleNicknameChange(name: string) {
+    setNickname(name);
   }
 
   /* ── Local flow ──────────────────────────────────── */
@@ -68,39 +71,47 @@ export default function App() {
     setScreen('game');
   }
 
-  function handleLocalGameUpdate(state: GameState) {
+  // useCallback: localPlayerNames is a dep because it's captured in the callback body
+  const handleLocalGameUpdate = useCallback((state: GameState) => {
     if (state.isFinished) {
       setResultState(state);
       setResultPlayerNames(localPlayerNames);
       setScreen('result');
     }
-  }
+  }, [localPlayerNames]);
 
   /* ── Online flow ─────────────────────────────────── */
-  function handleEnterRoom(info: OnlineSession) {
+  // useCallback with no deps: only uses stable setters
+  const handleEnterRoom = useCallback((info: OnlineSession) => {
     setSession(info);
     setScreen('waiting');
-  }
+  }, []);
 
-  function handleGameStart(gameState: GameState, playerNames: string[]) {
+  const handleGameStart = useCallback((gameState: GameState, playerNames: string[]) => {
     setOnlineInitialState(gameState);
     setOnlinePlayerNames(playerNames);
     setScreen('online-game');
-  }
+  }, []);
 
-  function handleOnlineGameEnd(state: GameState) {
+  const handleOnlineGameEnd = useCallback((state: GameState) => {
     setResultState(state);
     setResultPlayerNames(onlinePlayerNames);
     setScreen('result');
-  }
+  }, [onlinePlayerNames]);
 
-  function handleRoomDestroyed(reason: string) {
+  const handleRoomDestroyed = useCallback((reason: string) => {
     disconnectSocket();
     alert(`방이 종료되었습니다.\n${reason}`);
     setSession(null);
     setOnlineInitialState(null);
     setScreen('mode-select');
-  }
+  }, []);
+
+  const handleLeaveWaiting = useCallback(() => {
+    disconnectSocket();
+    setSession(null);
+    setScreen('mode-select');
+  }, []);
 
   /* ── Restart ─────────────────────────────────────── */
   function handleRestart() {
@@ -115,6 +126,10 @@ export default function App() {
 
   return (
     <div className="app">
+      {SCREENS_WITH_PROFILE.includes(screen) && (
+        <ProfileBadge nickname={nickname} onNicknameChange={handleNicknameChange} />
+      )}
+
       {screen === 'nickname' && (
         <NicknamePage onConfirm={handleNicknameConfirm} />
       )}
@@ -145,7 +160,7 @@ export default function App() {
         <Lobby
           onEnterRoom={handleEnterRoom}
           onBack={() => setScreen('mode-select')}
-          defaultPlayerName={nickname}
+          playerName={nickname}
           initialRoomCode={pendingRoomCode ?? undefined}
         />
       )}
@@ -155,6 +170,7 @@ export default function App() {
           session={session}
           onGameStart={handleGameStart}
           onDestroyed={handleRoomDestroyed}
+          onLeave={handleLeaveWaiting}
         />
       )}
 

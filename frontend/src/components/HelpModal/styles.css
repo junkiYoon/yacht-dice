@@ -34,7 +34,7 @@
 }
 
 .help-title {
-  font-family: 'Caveat', cursive;
+  font-family: 'Caveat', 'Gaegu', cursive;
   font-size: 24px;
   font-weight: 700;
   color: var(--text, #2c1f0a);
@@ -138,7 +138,7 @@
 .help-rule-example {
   font-size: 11px;
   color: var(--pencil, #8a6a30);
-  font-family: 'Caveat', cursive;
+  font-family: 'Caveat', 'Gaegu', cursive;
   font-size: 13px;
   grid-column: 2;
   grid-row: 2;

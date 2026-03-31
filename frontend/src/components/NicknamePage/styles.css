@@ -29,7 +29,7 @@
 }
 
 .nickname-title {
-  font-family: 'Caveat', cursive;
+  font-family: 'Caveat', 'Gaegu', cursive;
   font-size: 36px;
   font-weight: 700;
   color: var(--text);
@@ -61,7 +61,7 @@
   color: var(--text);
   font-size: 18px;
   font-weight: 700;
-  font-family: 'Caveat', cursive;
+  font-family: 'Caveat', 'Gaegu', cursive;
   outline: none;
   text-align: center;
   letter-spacing: 1px;

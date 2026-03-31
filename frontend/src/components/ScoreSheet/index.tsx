@@ -80,8 +80,8 @@ export default function ScoreSheet({ playerNames, gameState, onScore }: Props) {
       });
       if (fresh.size > 0) {
         setNewlyScored(fresh);
-        const t = setTimeout(() => setNewlyScored(new Set()), 1600);
-        return () => clearTimeout(t);
+        const timerId = setTimeout(() => setNewlyScored(new Set()), 1600);
+        return () => clearTimeout(timerId);
       }
     }
     prevPlayersRef.current = players.map((s) => ({ ...s }));

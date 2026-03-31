@@ -50,7 +50,7 @@ thead th {
   background: #fff9ee;
   border-bottom: 2px solid var(--border);
   padding: 10px 8px 8px;
-  font-family: 'Caveat', cursive;
+  font-family: 'Caveat', 'Gaegu', cursive;
   font-size: 15px;
   font-weight: 700;
   text-align: center;
@@ -58,7 +58,7 @@ thead th {
 
 .cell-header-label {
   text-align: left !important;
-  font-family: 'Nunito', sans-serif;
+  font-family: 'Nunito', 'Noto Sans KR', sans-serif;
   font-size: 10px;
   font-weight: 700;
   text-transform: uppercase;
@@ -84,7 +84,7 @@ thead th {
 .player-header-badge {
   display: inline-block;
   margin-top: 2px;
-  font-family: 'Nunito', sans-serif;
+  font-family: 'Nunito', 'Noto Sans KR', sans-serif;
   font-size: 9px;
   font-weight: 800;
   padding: 1px 6px;
@@ -105,7 +105,7 @@ thead th {
 .row-section-hd td {
   background: #fdf0e0;
   padding: 4px 10px 4px 52px;
-  font-family: 'Caveat', cursive;
+  font-family: 'Caveat', 'Gaegu', cursive;
   font-size: 13px;
   font-weight: 700;
   color: var(--text-muted);
@@ -180,7 +180,7 @@ thead th {
 
 .val-newly-written {
   display: inline-block;
-  font-family: 'Caveat', cursive;
+  font-family: 'Caveat', 'Gaegu', cursive;
   font-size: 16px;
   color: var(--ink);
   animation: writeIn 0.5s cubic-bezier(0.22, 1.4, 0.36, 1) forwards;
@@ -188,7 +188,7 @@ thead th {
 
 /* ── Values ───────────────────────────────────────── */
 .val-scored {
-  font-family: 'Caveat', cursive;
+  font-family: 'Caveat', 'Gaegu', cursive;
   font-size: 15px;
   color: var(--ink);
 }
@@ -224,7 +224,7 @@ thead th {
 
 .cell-bonus-earned {
   color: var(--success) !important;
-  font-family: 'Caveat', cursive;
+  font-family: 'Caveat', 'Gaegu', cursive;
   font-size: 16px;
 }
 
@@ -242,14 +242,14 @@ tfoot {
 }
 
 .row-total .cell-label {
-  font-family: 'Caveat', cursive;
+  font-family: 'Caveat', 'Gaegu', cursive;
   font-size: 16px;
   color: var(--text);
   padding-left: 52px;
 }
 
 .cell-total {
-  font-family: 'Caveat', cursive;
+  font-family: 'Caveat', 'Gaegu', cursive;
   font-size: 20px !important;
   font-weight: 700;
 }
