@@ -1,0 +1,62 @@
+.turn-announcement {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  pointer-events: none;
+  animation: announceFade 2.1s ease forwards;
+}
+
+@keyframes announceFade {
+  0%   { opacity: 0; }
+  12%  { opacity: 1; }
+  72%  { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+.announcement-box {
+  padding: 28px 56px;
+  border-radius: 20px;
+  text-align: center;
+  /* Notepad-paper style */
+  background: var(--paper);
+  border-top: 8px solid var(--paper-binding);
+  border-left: 4px solid currentColor;
+  box-shadow: 6px 8px 0 rgba(0,0,0,0.15), 8px 12px 32px rgba(0,0,0,0.35);
+  animation: announceScale 2.1s ease forwards;
+  transform-origin: center center;
+}
+
+@keyframes announceScale {
+  0%   { transform: scale(0.6) rotate(-4deg); }
+  12%  { transform: scale(1.06) rotate(1deg); }
+  20%  { transform: scale(1) rotate(0deg); }
+  72%  { transform: scale(1) rotate(0deg); }
+  100% { transform: scale(0.88) rotate(2deg); }
+}
+
+.announcement-label {
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: var(--text-muted);
+  margin-bottom: 8px;
+}
+
+.announcement-name {
+  font-family: 'Caveat', 'Gaegu', cursive;
+  font-size: 40px;
+  font-weight: 700;
+  color: currentColor;
+  line-height: 1.1;
+}
+
+.announcement-p1 { color: var(--p1); }
+.announcement-p2 { color: var(--p2); }
+.announcement-p3 { color: var(--p3); }
+.announcement-p4 { color: var(--p4); }
+.announcement-p5 { color: var(--p5); }
+.announcement-p6 { color: var(--p6); }

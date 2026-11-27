@@ -1,0 +1,108 @@
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  /* ── Wood table ────────────────────────────────── */
+  --wood:           #c4935a;
+  --wood-light:     #d4a36a;
+  --wood-dark:      #a07840;
+
+  /* ── Notepad paper ─────────────────────────────── */
+  --paper:          #fffef7;
+  --paper-line:     #d4e8f8;   /* blue ruled lines */
+  --paper-margin:   #ffb3b3;   /* red margin line  */
+  --paper-binding:  #d4b080;
+
+  /* ── Felt tray ─────────────────────────────────── */
+  --felt:           #b83020;
+  --felt-center:    #cc3828;
+
+  /* ── Metal trim ────────────────────────────────── */
+  --metal-light:    #d8d8d8;
+  --metal:          #a8a8a8;
+  --metal-dark:     #686868;
+
+  /* ── Text ──────────────────────────────────────── */
+  --text:           #2c1f0e;
+  --text-muted:     #8a7050;
+  --text-dim:       #c0a880;
+
+  /* ── Ink / writing ─────────────────────────────── */
+  --ink:            #1a3070;   /* scored values (pen blue) */
+  --pencil:         #9090a8;   /* potential values (pencil) */
+
+  /* ── Player colors ─────────────────────────────── */
+  --p1:  #2563eb;
+  --p2:  #dc5f20;
+  --p3:  #16a34a;
+  --p4:  #9333ea;
+  --p5:  #b45309;
+  --p6:  #0e7490;
+
+  /* ── UI ────────────────────────────────────────── */
+  --accent:         #e84040;
+  --accent-hover:   #cc3030;
+  --success:        #16a34a;
+  --warning:        #f59e0b;
+  --border:         #e0d0b4;
+  --border-strong:  #c8b898;
+
+  /* ── Shape ─────────────────────────────────────── */
+  --radius:         10px;
+  --radius-lg:      18px;
+  --radius-xl:      26px;
+
+  /* ── Shadows ───────────────────────────────────── */
+  --shadow-paper:   2px 4px 16px rgba(80, 50, 10, 0.12);
+  --shadow-card:    0 4px 24px rgba(80, 50, 10, 0.15), 0 1px 4px rgba(80,50,10,0.08);
+  --shadow-btn:     0 4px 0 rgba(0,0,0,0.2), 0 6px 16px rgba(0,0,0,0.15);
+}
+
+html, body {
+  height: 100%;
+  font-family: 'Nunito', 'Noto Sans KR', sans-serif;
+  background:
+    repeating-linear-gradient(
+      90deg,
+      transparent 0px, transparent 79px,
+      rgba(0,0,0,0.025) 80px
+    ),
+    repeating-linear-gradient(
+      0deg,
+      transparent 0px, transparent 119px,
+      rgba(0,0,0,0.018) 120px
+    ),
+    linear-gradient(155deg, var(--wood-light) 0%, var(--wood) 45%, var(--wood-dark) 100%);
+  color: var(--text);
+  font-size: 14px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+#root { height: 100%; }
+
+.app {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+button {
+  cursor: pointer;
+  border: none;
+  font-family: inherit;
+  font-size: inherit;
+  font-weight: 700;
+  transition: transform 0.1s, box-shadow 0.12s, background 0.15s, opacity 0.15s;
+}
+
+button:active:not(:disabled) { transform: scale(0.96) translateY(1px); }
+button:disabled { cursor: not-allowed; opacity: 0.45; }
+
+input {
+  font-family: inherit;
+  font-size: inherit;
+}
