@@ -1,12 +1,13 @@
 import { useEffect, useState } from 'react';
+import { t } from '../../i18n';
 import { getSocket } from '../../socket/socketClient';
 import { OnlineSession, RoomPlayer } from '../../types/online';
-import { GameState } from '../../types/game';
+import { AnyGameState } from '../../types/lasVegas';
 import './styles.css';
 
 interface Props {
   session: OnlineSession;
-  onGameStart: (gameState: GameState, playerNames: string[]) => void;
+  onGameStart: (gameState: AnyGameState, playerNames: string[]) => void;
   onDestroyed: (reason: string) => void;
   onLeave: () => void;
 }
@@ -33,7 +34,7 @@ export default function WaitingRoom({ session, onGameStart, onDestroyed, onLeave
       setPlayers(data.players);
     }
 
-    function onGameStarted(data: { gameState: GameState; playerNames: string[] }) {
+    function onGameStarted(data: { gameState: AnyGameState; playerNames: string[] }) {
       onGameStart(data.gameState, data.playerNames);
     }
 
@@ -97,7 +98,10 @@ export default function WaitingRoom({ session, onGameStart, onDestroyed, onLeave
       <div className="waiting-card">
         <div className="waiting-header">
           <button className="waiting-leave-btn" onClick={onLeave}>← 나가기</button>
-          <h2 className="waiting-title">대기실</h2>
+          <h2 className="waiting-title">
+            대기실 · {t().games[session.gameType].name}
+            {session.gameType === 'lasVegas' && ` · ${session.rounds}라운드`}
+          </h2>
         </div>
 
         <div className="room-code-box">

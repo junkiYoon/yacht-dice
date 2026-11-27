@@ -1,9 +1,14 @@
 import { useCallback, useState } from 'react';
-import { GameState } from './types/game';
+import { GameType } from './types/game';
+import { AnyGameState, isLasVegasState, LAS_VEGAS_ROUNDS } from './types/lasVegas';
 import { OnlineSession } from './types/online';
 import { disconnectSocket } from './socket/socketClient';
 import NicknamePage from './components/NicknamePage';
+import GameSelect from './components/GameSelect';
 import ModeSelect from './components/ModeSelect';
+import LasVegasBoard from './components/LasVegasBoard';
+import OnlineLasVegasBoard from './components/OnlineLasVegasBoard';
+import LasVegasResult from './components/LasVegasResult';
 import GameSetup from './components/GameSetup';
 import GameBoard from './components/GameBoard';
 import Lobby from './components/Lobby';
@@ -14,6 +19,7 @@ import ProfileBadge from './components/ProfileBadge';
 
 type Screen =
   | 'nickname'
+  | 'game-select'
   | 'mode-select'
   | 'setup'
   | 'game'
@@ -22,12 +28,12 @@ type Screen =
   | 'online-game'
   | 'result';
 
-const SCREENS_WITH_PROFILE: Screen[] = ['mode-select', 'setup', 'lobby', 'waiting'];
+const SCREENS_WITH_PROFILE: Screen[] = ['game-select', 'mode-select', 'setup', 'lobby', 'waiting'];
 
 function getInitialScreen(nickname: string | null, pendingRoomCode: string | null): Screen {
   if (!nickname) return 'nickname';
   if (pendingRoomCode) return 'lobby';
-  return 'mode-select';
+  return 'game-select';
 }
 
 export default function App() {
@@ -41,23 +47,30 @@ export default function App() {
     getInitialScreen(localStorage.getItem('nickname'), new URLSearchParams(window.location.search).get('room'))
   );
   const [isOnline, setIsOnline] = useState(false);
+  const [gameType, setGameType] = useState<GameType>('yacht');
 
   // Local play state
   const [localPlayerNames, setLocalPlayerNames] = useState<string[]>([]);
+  const [localRounds, setLocalRounds] = useState(LAS_VEGAS_ROUNDS.default);
 
   // Online play state
   const [session, setSession] = useState<OnlineSession | null>(null);
   const [onlinePlayerNames, setOnlinePlayerNames] = useState<string[]>([]);
-  const [onlineInitialState, setOnlineInitialState] = useState<GameState | null>(null);
+  const [onlineInitialState, setOnlineInitialState] = useState<AnyGameState | null>(null);
 
   // Shared result state
-  const [resultState, setResultState] = useState<GameState | null>(null);
+  const [resultState, setResultState] = useState<AnyGameState | null>(null);
   const [resultPlayerNames, setResultPlayerNames] = useState<string[]>([]);
 
   /* ── Nickname flow ───────────────────────────────── */
   function handleNicknameConfirm(name: string) {
     setNickname(name);
-    setScreen(pendingRoomCode ? 'lobby' : 'mode-select');
+    setScreen(pendingRoomCode ? 'lobby' : 'game-select');
+  }
+
+  function handleGameSelect(type: GameType) {
+    setGameType(type);
+    setScreen('mode-select');
   }
 
   function handleNicknameChange(name: string) {
@@ -65,14 +78,15 @@ export default function App() {
   }
 
   /* ── Local flow ──────────────────────────────────── */
-  function handleLocalStart(names: string[]) {
+  function handleLocalStart(names: string[], rounds: number) {
     setLocalPlayerNames(names);
+    setLocalRounds(rounds);
     setIsOnline(false);
     setScreen('game');
   }
 
   // useCallback: localPlayerNames is a dep because it's captured in the callback body
-  const handleLocalGameUpdate = useCallback((state: GameState) => {
+  const handleLocalGameUpdate = useCallback((state: AnyGameState) => {
     if (state.isFinished) {
       setResultState(state);
       setResultPlayerNames(localPlayerNames);
@@ -84,16 +98,17 @@ export default function App() {
   // useCallback with no deps: only uses stable setters
   const handleEnterRoom = useCallback((info: OnlineSession) => {
     setSession(info);
+    setGameType(info.gameType);
     setScreen('waiting');
   }, []);
 
-  const handleGameStart = useCallback((gameState: GameState, playerNames: string[]) => {
+  const handleGameStart = useCallback((gameState: AnyGameState, playerNames: string[]) => {
     setOnlineInitialState(gameState);
     setOnlinePlayerNames(playerNames);
     setScreen('online-game');
   }, []);
 
-  const handleOnlineGameEnd = useCallback((state: GameState) => {
+  const handleOnlineGameEnd = useCallback((state: AnyGameState) => {
     setResultState(state);
     setResultPlayerNames(onlinePlayerNames);
     setScreen('result');
@@ -134,30 +149,42 @@ export default function App() {
         <NicknamePage onConfirm={handleNicknameConfirm} />
       )}
 
+      {screen === 'game-select' && <GameSelect onSelect={handleGameSelect} />}
+
       {screen === 'mode-select' && (
         <ModeSelect
+          gameType={gameType}
           onLocal={() => setScreen('setup')}
           onOnline={() => { setIsOnline(true); setScreen('lobby'); }}
+          onBack={() => setScreen('game-select')}
         />
       )}
 
       {screen === 'setup' && (
         <GameSetup
+          gameType={gameType}
           onStart={handleLocalStart}
           onBack={() => setScreen('mode-select')}
           defaultName={nickname}
         />
       )}
 
-      {screen === 'game' && (
+      {screen === 'game' && (gameType === 'lasVegas' ? (
+        <LasVegasBoard
+          playerNames={localPlayerNames}
+          rounds={localRounds}
+          onGameUpdate={handleLocalGameUpdate}
+        />
+      ) : (
         <GameBoard
           playerNames={localPlayerNames}
           onGameUpdate={handleLocalGameUpdate}
         />
-      )}
+      ))}
 
       {screen === 'lobby' && (
         <Lobby
+          gameType={gameType}
           onEnterRoom={handleEnterRoom}
           onBack={() => setScreen('mode-select')}
           playerName={nickname}
@@ -174,7 +201,15 @@ export default function App() {
         />
       )}
 
-      {screen === 'online-game' && session && onlineInitialState && (
+      {screen === 'online-game' && session && onlineInitialState && (isLasVegasState(onlineInitialState) ? (
+        <OnlineLasVegasBoard
+          session={session}
+          initialGameState={onlineInitialState}
+          playerNames={onlinePlayerNames}
+          onGameEnd={handleOnlineGameEnd}
+          onDestroyed={handleRoomDestroyed}
+        />
+      ) : (
         <OnlineGameBoard
           session={session}
           initialGameState={onlineInitialState}
@@ -182,15 +217,21 @@ export default function App() {
           onGameEnd={handleOnlineGameEnd}
           onDestroyed={handleRoomDestroyed}
         />
-      )}
+      ))}
 
-      {screen === 'result' && resultState && (
+      {screen === 'result' && resultState && (isLasVegasState(resultState) ? (
+        <LasVegasResult
+          gameState={resultState}
+          playerNames={resultPlayerNames}
+          onRestart={handleRestart}
+        />
+      ) : (
         <GameResult
           gameState={resultState}
           playerNames={resultPlayerNames}
           onRestart={handleRestart}
         />
-      )}
+      ))}
     </div>
   );
 }
