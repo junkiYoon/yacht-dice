@@ -1,16 +1,23 @@
+import { t } from '../../i18n';
+import { GameType } from '../../types/game';
 import './styles.css';
 
 interface Props {
+  gameType: GameType;
   onLocal: () => void;
   onOnline: () => void;
+  onBack: () => void;
 }
 
-export default function ModeSelect({ onLocal, onOnline }: Props) {
+export default function ModeSelect({ gameType, onLocal, onOnline, onBack }: Props) {
+  const game = t().games[gameType];
+
   return (
     <div className="mode-select-container">
       <div className="mode-select-card">
-        <div className="mode-logo">🎲</div>
-        <h1 className="mode-title">요트 다이스</h1>
+        <button className="mode-back-btn" onClick={onBack}>← 게임 선택</button>
+        <div className="mode-logo">{game.icon}</div>
+        <h1 className="mode-title">{game.name}</h1>
         <p className="mode-subtitle">게임 모드를 선택하세요</p>
         <div className="mode-buttons">
           <button className="mode-btn mode-btn--local" onClick={onLocal}>

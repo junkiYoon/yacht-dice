@@ -8,7 +8,7 @@ import {
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 import { Category } from './domain/board';
-import { RoomService } from './room.service';
+import { GameType, RoomService } from './room.service';
 
 @WebSocketGateway({ cors: { origin: process.env.CORS_ORIGIN ?? '*' } })
 export class GameGateway implements OnGatewayDisconnect {
@@ -20,13 +20,21 @@ export class GameGateway implements OnGatewayDisconnect {
   @SubscribeMessage('create-room')
   handleCreateRoom(
     @ConnectedSocket() client: Socket,
-    @MessageBody() data: { maxPlayers: number; playerName: string },
+    @MessageBody()
+    data: {
+      maxPlayers: number;
+      playerName: string;
+      gameType?: GameType;
+      rounds?: number;
+    },
   ) {
     try {
       const room = this.roomService.createRoom(
         client.id,
         data.maxPlayers,
         data.playerName,
+        data.gameType === 'lasVegas' ? 'lasVegas' : 'yacht',
+        data.rounds,
       );
       client.join(room.code);
       client.emit('room-created', {
@@ -35,6 +43,8 @@ export class GameGateway implements OnGatewayDisconnect {
         isHost: true,
         players: room.players,
         maxPlayers: room.maxPlayers,
+        gameType: room.gameType,
+        rounds: room.rounds,
       });
       this.broadcastRoomsUpdate();
     } catch (e) {
@@ -62,6 +72,8 @@ export class GameGateway implements OnGatewayDisconnect {
         isHost: false,
         players: room.players,
         maxPlayers: room.maxPlayers,
+        gameType: room.gameType,
+        rounds: room.rounds,
       });
       client.to(room.code).emit('room-updated', { players: room.players });
       this.broadcastRoomsUpdate();
@@ -158,6 +170,21 @@ export class GameGateway implements OnGatewayDisconnect {
         data.roomCode,
         data.category,
       );
+      this.server.to(room.code).emit('game-updated', {
+        gameState: room.game!.getState(),
+      });
+    } catch (e) {
+      this.emitError(client, e);
+    }
+  }
+
+  @SubscribeMessage('place')
+  handlePlace(
+    @ConnectedSocket() client: Socket,
+    @MessageBody() data: { roomCode: string; value: number },
+  ) {
+    try {
+      const room = this.roomService.place(client.id, data.roomCode, data.value);
       this.server.to(room.code).emit('game-updated', {
         gameState: room.game!.getState(),
       });

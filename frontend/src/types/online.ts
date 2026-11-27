@@ -1,3 +1,5 @@
+import { GameType } from './game';
+
 export interface RoomPlayer {
   socketId: string;
   name: string;
@@ -11,10 +13,14 @@ export interface OnlineSession {
   players: RoomPlayer[];
   maxPlayers: number;
   playerName: string;
+  gameType: GameType;
+  rounds: number;
 }
 
 export interface PublicRoom {
   code: string;
   playerCount: number;
   maxPlayers: number;
+  gameType: GameType;
+  rounds: number;
 }

@@ -1,6 +1,21 @@
 import { Injectable } from '@nestjs/common';
 import { Category } from './domain/board';
+import {
+  clampRounds,
+  LAS_VEGAS_MAX_PLAYERS,
+  LAS_VEGAS_MIN_PLAYERS,
+  LasVegasGame,
+} from './domain/las-vegas-game';
 import { MultiPlayerGame } from './domain/multi-player-game';
+
+export type GameType = 'yacht' | 'lasVegas';
+
+const PLAYER_LIMITS: Record<GameType, { min: number; max: number }> = {
+  yacht: { min: 1, max: 6 },
+  lasVegas: { min: LAS_VEGAS_MIN_PLAYERS, max: LAS_VEGAS_MAX_PLAYERS },
+};
+
+const UNSUPPORTED_ACTION = '이 게임에서 지원하지 않는 동작입니다.';
 
 export interface RoomPlayer {
   socketId: string;
@@ -13,7 +28,9 @@ export interface GameRoom {
   hostSocketId: string;
   maxPlayers: number;
   players: RoomPlayer[];
-  game: MultiPlayerGame | null;
+  gameType: GameType;
+  rounds: number;
+  game: MultiPlayerGame | LasVegasGame | null;
   status: 'waiting' | 'playing';
 }
 
@@ -21,6 +38,8 @@ export interface PublicRoom {
   code: string;
   playerCount: number;
   maxPlayers: number;
+  gameType: GameType;
+  rounds: number;
 }
 
 export interface RemoveResult {
@@ -45,17 +64,22 @@ export class RoomService {
     socketId: string,
     maxPlayers: number,
     playerName: string,
+    gameType: GameType,
+    rounds: unknown,
   ): GameRoom {
     let code: string;
     do {
       code = generateCode();
     } while (this.rooms.has(code));
 
+    const { min, max } = PLAYER_LIMITS[gameType];
     const room: GameRoom = {
       code,
       hostSocketId: socketId,
-      maxPlayers: Math.max(1, Math.min(6, maxPlayers)),
+      maxPlayers: Math.max(min, Math.min(max, maxPlayers)),
       players: [{ socketId, name: playerName, playerIndex: 0 }],
+      gameType,
+      rounds: clampRounds(rounds),
       game: null,
       status: 'waiting',
     };
@@ -89,7 +113,11 @@ export class RoomService {
       throw new Error('이미 게임이 시작되었습니다.');
     }
 
-    room.game = new MultiPlayerGame(room.players.length);
+    const playerCount = room.players.length;
+    room.game =
+      room.gameType === 'lasVegas'
+        ? new LasVegasGame(playerCount, room.rounds)
+        : new MultiPlayerGame(playerCount);
     room.status = 'playing';
     return room;
   }
@@ -104,14 +132,30 @@ export class RoomService {
   togglePin(socketId: string, code: string, index: number): GameRoom {
     const { room, player } = this.getActivePlayer(socketId, code);
     this.validateTurn(room, player);
-    room.game!.togglePin(index);
+    if (!(room.game instanceof MultiPlayerGame)) {
+      throw new Error(UNSUPPORTED_ACTION);
+    }
+    room.game.togglePin(index);
     return room;
   }
 
   score(socketId: string, code: string, category: Category): GameRoom {
     const { room, player } = this.getActivePlayer(socketId, code);
     this.validateTurn(room, player);
-    room.game!.score(category);
+    if (!(room.game instanceof MultiPlayerGame)) {
+      throw new Error(UNSUPPORTED_ACTION);
+    }
+    room.game.score(category);
+    return room;
+  }
+
+  place(socketId: string, code: string, value: number): GameRoom {
+    const { room, player } = this.getActivePlayer(socketId, code);
+    this.validateTurn(room, player);
+    if (!(room.game instanceof LasVegasGame)) {
+      throw new Error(UNSUPPORTED_ACTION);
+    }
+    room.game.place(value);
     return room;
   }
 
@@ -123,6 +167,8 @@ export class RoomService {
           code: room.code,
           playerCount: room.players.length,
           maxPlayers: room.maxPlayers,
+          gameType: room.gameType,
+          rounds: room.rounds,
         });
       }
     }

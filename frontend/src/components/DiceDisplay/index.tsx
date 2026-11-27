@@ -7,6 +7,7 @@ interface Props {
   rolling: boolean;
   canPin: boolean;
   rollDelay?: number;
+  title?: string;
   onClick: () => void;
 }
 
@@ -31,6 +32,7 @@ export default function DiceDisplay({
   rolling,
   canPin,
   rollDelay = 0,
+  title,
   onClick,
 }: Props) {
   const [displayValue, setDisplayValue] = useState(value);
@@ -86,7 +88,7 @@ export default function DiceDisplay({
         .join(' ')}
       onClick={onClick}
       disabled={!canPin}
-      title={canPin ? (pinned ? '고정 해제' : '고정') : undefined}
+      title={title ?? (canPin ? (pinned ? '고정 해제' : '고정') : undefined)}
     >
       <div className="die-grid">
         {dots.map(([row, col], i) => (

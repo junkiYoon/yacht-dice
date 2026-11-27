@@ -1,18 +1,26 @@
 import { useEffect, useState } from 'react';
+import { t } from '../../i18n';
 import { getSocket } from '../../socket/socketClient';
-import { OnlineSession, PublicRoom, RoomPlayer } from '../../types/online';
+import { GameType, PLAYER_LIMITS } from '../../types/game';
+import { LAS_VEGAS_ROUNDS } from '../../types/lasVegas';
+import { OnlineSession, PublicRoom } from '../../types/online';
 import './styles.css';
 
+type RoomEntry = Omit<OnlineSession, 'playerName'>;
+
 interface Props {
+  gameType: GameType;
   onEnterRoom: (info: OnlineSession) => void;
   onBack: () => void;
   playerName: string;
   initialRoomCode?: string;
 }
 
-export default function Lobby({ onEnterRoom, onBack, playerName, initialRoomCode }: Props) {
+export default function Lobby({ gameType, onEnterRoom, onBack, playerName, initialRoomCode }: Props) {
+  const maxLimit = PLAYER_LIMITS[gameType].max;
   const [tab, setTab] = useState<'create' | 'join'>(initialRoomCode ? 'join' : 'create');
   const [maxPlayers, setMaxPlayers] = useState(2);
+  const [rounds, setRounds] = useState(LAS_VEGAS_ROUNDS.default);
   const [roomCode, setRoomCode] = useState(initialRoomCode ?? '');
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -23,24 +31,12 @@ export default function Lobby({ onEnterRoom, onBack, playerName, initialRoomCode
   useEffect(() => {
     const socket = getSocket();
 
-    function onRoomCreated(data: {
-      roomCode: string;
-      playerIndex: number;
-      isHost: boolean;
-      players: RoomPlayer[];
-      maxPlayers: number;
-    }) {
+    function onRoomCreated(data: RoomEntry) {
       setLoading(false);
       onEnterRoom({ ...data, playerName: effectiveName });
     }
 
-    function onRoomJoined(data: {
-      roomCode: string;
-      playerIndex: number;
-      isHost: boolean;
-      players: RoomPlayer[];
-      maxPlayers: number;
-    }) {
+    function onRoomJoined(data: RoomEntry) {
       setLoading(false);
       onEnterRoom({ ...data, playerName: effectiveName });
     }
@@ -79,7 +75,7 @@ export default function Lobby({ onEnterRoom, onBack, playerName, initialRoomCode
     e.preventDefault();
     setError(null);
     setLoading(true);
-    getSocket().emit('create-room', { maxPlayers, playerName: effectiveName });
+    getSocket().emit('create-room', { maxPlayers, playerName: effectiveName, gameType, rounds });
   }
 
   function handleJoin(e: React.FormEvent) {
@@ -96,12 +92,14 @@ export default function Lobby({ onEnterRoom, onBack, playerName, initialRoomCode
     });
   }
 
+  const visibleRooms = rooms.filter((room) => room.gameType === gameType);
+
   return (
     <div className="lobby-container">
       <div className="lobby-card">
         <div className="lobby-header">
           <button className="lobby-back-btn" onClick={onBack}>← 뒤로</button>
-          <h1 className="lobby-title">온라인 멀티플레이</h1>
+          <h1 className="lobby-title">{t().games[gameType].name} 온라인</h1>
         </div>
 
         <div className="lobby-tabs">
@@ -134,11 +132,31 @@ export default function Lobby({ onEnterRoom, onBack, playerName, initialRoomCode
                 <button
                   type="button"
                   className="count-btn"
-                  onClick={() => setMaxPlayers((p) => Math.min(6, p + 1))}
-                  disabled={maxPlayers >= 6}
+                  onClick={() => setMaxPlayers((p) => Math.min(maxLimit, p + 1))}
+                  disabled={maxPlayers >= maxLimit}
                 >+</button>
               </div>
             </div>
+            {gameType === 'lasVegas' && (
+              <div className="lobby-count-row">
+                <span className="lobby-label">라운드 수</span>
+                <div className="lobby-count-ctrl">
+                  <button
+                    type="button"
+                    className="count-btn"
+                    onClick={() => setRounds((r) => r - 1)}
+                    disabled={rounds <= LAS_VEGAS_ROUNDS.min}
+                  >−</button>
+                  <span className="count-value">{rounds}라운드</span>
+                  <button
+                    type="button"
+                    className="count-btn"
+                    onClick={() => setRounds((r) => r + 1)}
+                    disabled={rounds >= LAS_VEGAS_ROUNDS.max}
+                  >+</button>
+                </div>
+              </div>
+            )}
             {error && <p className="lobby-error">{error}</p>}
             <button type="submit" className="lobby-submit-btn" disabled={loading}>
               {loading ? '생성 중...' : '방 만들기'}
@@ -178,10 +196,10 @@ export default function Lobby({ onEnterRoom, onBack, playerName, initialRoomCode
               새로고침
             </button>
           </div>
-          {rooms.length === 0 ? (
+          {visibleRooms.length === 0 ? (
             <p className="room-list-empty">참가 가능한 방이 없습니다</p>
           ) : (
-            rooms.map((room) => (
+            visibleRooms.map((room) => (
               <button
                 key={room.code}
                 type="button"
@@ -189,7 +207,10 @@ export default function Lobby({ onEnterRoom, onBack, playerName, initialRoomCode
                 onClick={() => { setTab('join'); setRoomCode(room.code); setError(null); }}
               >
                 <span className="room-item-code">{room.code}</span>
-                <span className="room-item-count">{room.playerCount} / {room.maxPlayers}명</span>
+                <span className="room-item-count">
+                  {room.playerCount} / {room.maxPlayers}명
+                  {room.gameType === 'lasVegas' && ` · ${room.rounds}라운드`}
+                </span>
               </button>
             ))
           )}

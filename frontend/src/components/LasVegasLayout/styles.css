@@ -1,0 +1,367 @@
+.lv-color--p1 { --pc: var(--p1); }
+.lv-color--p2 { --pc: var(--p2); }
+.lv-color--p3 { --pc: var(--p3); }
+.lv-color--p4 { --pc: var(--p4); }
+.lv-color--p5 { --pc: var(--p5); }
+
+/* ── Sidebar: players ─────────────────────────────── */
+.lv-sidebar {
+  flex: 1;
+  overflow-y: auto;
+  background: var(--paper);
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.lv-round {
+  font-family: 'Caveat', 'Gaegu', cursive;
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.lv-players {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.lv-player {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 2px 8px;
+  padding: 10px 14px;
+  border-radius: var(--radius);
+  background: #fff;
+  border: 1.5px solid var(--border);
+  border-left: 6px solid var(--pc);
+  transition: box-shadow 0.15s, border-color 0.15s;
+}
+
+.lv-player--active {
+  border-color: var(--pc);
+  box-shadow: 0 4px 16px rgba(80, 50, 10, 0.18);
+}
+
+.lv-player-name {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 800;
+  color: var(--pc);
+}
+
+.lv-start-badge {
+  font-size: 10px;
+  font-weight: 800;
+  padding: 1px 7px;
+  border-radius: 8px;
+  background: var(--pc);
+  color: #fff;
+}
+
+.lv-player-money {
+  font-weight: 900;
+  color: var(--success);
+  text-align: right;
+}
+
+.lv-player-dice {
+  grid-column: 1 / -1;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+/* ── Table: casinos ───────────────────────────────── */
+.lv-table {
+  width: 100%;
+  max-width: 760px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 28px;
+}
+
+.lv-casinos {
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+}
+
+.lv-casino {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-height: 156px;
+  padding: 12px;
+  border-radius: var(--radius-lg);
+  background: radial-gradient(ellipse at 50% 20%, var(--casino-light) 0%, var(--casino) 75%);
+  border: 3px solid var(--casino-edge);
+  color: #fff;
+  text-align: left;
+  box-shadow: var(--shadow-btn);
+}
+
+.lv-casino--1 { --casino-light: #c2312f; --casino: #7f1d1d; --casino-edge: #450a0a; }
+.lv-casino--2 { --casino-light: #d25a1c; --casino: #9a3412; --casino-edge: #431407; }
+.lv-casino--3 { --casino-light: #c99316; --casino: #8a5a06; --casino-edge: #422006; }
+.lv-casino--4 { --casino-light: #237a43; --casino: #145029; --casino-edge: #052e16; }
+.lv-casino--5 { --casino-light: #2f5fd0; --casino: #1e3a8a; --casino-edge: #172554; }
+.lv-casino--6 { --casino-light: #8a3ad0; --casino: #581c87; --casino-edge: #3b0764; }
+
+.lv-casino:disabled {
+  opacity: 1;
+  cursor: default;
+}
+
+.lv-casino--placeable {
+  border-color: #facc15;
+  box-shadow: 0 0 0 3px rgba(250, 204, 21, 0.35), var(--shadow-btn);
+}
+
+.lv-casino--placeable:hover {
+  transform: translateY(-3px);
+}
+
+.lv-casino-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.lv-casino-face {
+  font-size: 32px;
+  line-height: 1;
+}
+
+.lv-casino-name {
+  flex: 1;
+  font-size: 13px;
+  font-weight: 800;
+  opacity: 0.85;
+}
+
+.lv-casino-preview {
+  font-size: 12px;
+  font-weight: 900;
+  padding: 2px 9px;
+  border-radius: 12px;
+  background: #facc15;
+  color: #1a1a1a;
+}
+
+.lv-bills {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+/* ── Banknote ─────────────────────────────────────── */
+.lv-bill,
+.lv-bank-stack {
+  --bill-top: #b9d6b7;
+  --bill-base: #8dbb8a;
+  --bill-ink: #1f3d1e;
+  --bill-frame: #5f8f5c;
+  background:
+    repeating-linear-gradient(135deg, rgba(127, 127, 127, 0.12) 0 2px, transparent 2px 6px),
+    radial-gradient(ellipse at 50% 50%, rgba(255, 255, 255, 0.3) 0 30%, transparent 70%),
+    linear-gradient(180deg, var(--bill-top) 0%, var(--bill-base) 100%);
+  border: 1px solid var(--bill-frame);
+  border-radius: 3px;
+}
+
+.lv-bill--1 { --bill-top: #e4e6e8; --bill-base: #c9cccf; --bill-ink: #3a3f44; --bill-frame: #9aa0a6; }
+.lv-bill--2 { --bill-top: #b9d6b7; --bill-base: #8dbb8a; --bill-ink: #1f3d1e; --bill-frame: #5f8f5c; }
+.lv-bill--3 { --bill-top: #72c6b7; --bill-base: #3fa796; --bill-ink: #052e27; --bill-frame: #1f7a6b; }
+.lv-bill--4 { --bill-top: #6a9ee0; --bill-base: #3e7cc9; --bill-ink: #ffffff; --bill-frame: #a9c8ef; }
+.lv-bill--5 { --bill-top: #4258b0; --bill-base: #2b3f8f; --bill-ink: #ffffff; --bill-frame: #93a5e3; }
+.lv-bill--6 { --bill-top: #9a70d1; --bill-base: #7b4bb7; --bill-ink: #ffffff; --bill-frame: #d2bdf0; }
+.lv-bill--7 { --bill-top: #c4497a; --bill-base: #a62b5a; --bill-ink: #ffffff; --bill-frame: #f2b3cb; }
+.lv-bill--8 { --bill-top: #f29c48; --bill-base: #e07b1f; --bill-ink: #3a1a00; --bill-frame: #ffd8a0; }
+.lv-bill--9 { --bill-top: #3a3a3a; --bill-base: #1c1c1c; --bill-ink: #d4af37; --bill-frame: #d4af37; }
+
+.lv-bill {
+  position: relative;
+  height: 30px;
+  padding: 0 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 13px;
+  font-weight: 900;
+  letter-spacing: 0.2px;
+  color: var(--bill-ink);
+  box-shadow:
+    inset 0 0 0 2px var(--bill-base),
+    inset 0 0 0 3px var(--bill-frame),
+    0 2px 4px rgba(0, 0, 0, 0.35);
+  animation: billDeal 0.55s cubic-bezier(0.22, 1.1, 0.36, 1) both;
+}
+
+.lv-bill--9 {
+  background:
+    linear-gradient(110deg, transparent 40%, rgba(212, 175, 55, 0.45) 50%, transparent 60%),
+    repeating-linear-gradient(135deg, rgba(212, 175, 55, 0.1) 0 2px, transparent 2px 6px),
+    linear-gradient(180deg, var(--bill-top) 0%, var(--bill-base) 100%);
+  background-size: 250% 100%, auto, auto;
+  box-shadow:
+    inset 0 0 0 2px var(--bill-base),
+    inset 0 0 0 3px var(--bill-frame),
+    0 0 8px rgba(212, 175, 55, 0.55),
+    0 2px 4px rgba(0, 0, 0, 0.45);
+  animation:
+    billDeal 0.55s cubic-bezier(0.22, 1.1, 0.36, 1) both,
+    billShine 3.2s ease-in-out 1s infinite;
+}
+
+@keyframes billShine {
+  0%   { background-position: 160% 0, 0 0, 0 0; }
+  60%, 100% { background-position: -60% 0, 0 0, 0 0; }
+}
+
+.lv-bill::before {
+  content: '$';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 1px solid var(--bill-frame);
+  background: var(--bill-top);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  color: var(--bill-ink);
+}
+
+.lv-bill::after {
+  content: attr(data-short);
+  font-size: 10px;
+  font-weight: 800;
+  opacity: 0.65;
+}
+
+@keyframes billDeal {
+  0% {
+    opacity: 0;
+    transform: translate(var(--deal-from-x, 0), var(--deal-from-y, -80px)) rotate(-18deg) scale(0.55);
+  }
+  15% { opacity: 1; }
+  75% { transform: translate(0, 3px) rotate(2deg) scale(1.04); }
+  100% { opacity: 1; transform: none; }
+}
+
+/* ── Bank: deck the bills are dealt from ──────────── */
+.lv-bank {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: -10px;
+}
+
+.lv-bank-stack {
+  width: 72px;
+  height: 30px;
+  box-shadow:
+    inset 0 0 0 2px #eaf5df,
+    0 -3px 0 #9cc382,
+    0 -6px 0 #b4d699,
+    0 -9px 0 #9cc382,
+    0 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+.lv-bank--dealing .lv-bank-stack {
+  animation: bankPulse 0.36s ease-in-out infinite alternate;
+}
+
+@keyframes bankPulse {
+  from { transform: translateY(0); }
+  to   { transform: translateY(-3px); }
+}
+
+.lv-bank-label {
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--text);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lv-bill,
+  .lv-bank--dealing .lv-bank-stack { animation: none; }
+}
+
+.lv-casino-dice {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: auto;
+}
+
+.lv-chip {
+  min-width: 26px;
+  height: 26px;
+  padding: 0 6px;
+  border-radius: 7px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 900;
+  background: var(--pc);
+  color: #fff;
+  border: 2px solid rgba(255, 255, 255, 0.9);
+  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.35);
+}
+
+/* ── Tray: rolled dice ────────────────────────────── */
+.lv-tray .die {
+  width: 58px;
+  height: 58px;
+  border-radius: 12px;
+}
+
+.lv-tray .die-grid {
+  width: 40px;
+  height: 40px;
+}
+
+.lv-tray .die-dot {
+  width: 9px;
+  height: 9px;
+}
+
+.lv-die .die {
+  background: var(--pc);
+  border-color: rgba(0, 0, 0, 0.25);
+  box-shadow:
+    4px 6px 0 rgba(0, 0, 0, 0.35),
+    6px 9px 18px rgba(0, 0, 0, 0.3),
+    inset 0 2px 4px rgba(255, 255, 255, 0.35);
+}
+
+.lv-die .die-dot {
+  background: #fff;
+  box-shadow: none;
+}
+
+.lv-tray--idle .die {
+  filter: saturate(0.6);
+}
+
+.lv-tray--idle .die-dot {
+  opacity: 0.25;
+}
+
+@media (max-width: 700px) {
+  .lv-casinos { grid-template-columns: repeat(2, 1fr); }
+}

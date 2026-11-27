@@ -1,8 +1,10 @@
 export const ko = {
   title: '요트 다이스',
+  games: {
+    yacht: { name: '요트 다이스', subtitle: '클래식 주사위 게임', icon: '🎲' },
+    lasVegas: { name: '라스베가스', subtitle: '카지노에 주사위를 거는 배팅 게임', icon: '🎰' },
+  },
   setup: {
-    heading: '요트 다이스',
-    subtitle: '클래식 주사위 게임',
     playerCountLabel: '인원 수',
     playerNameLabel: (n: number) => `플레이어 ${n} 이름`,
     playerNamePlaceholder: (n: number) => `플레이어 ${n}`,

@@ -1,3 +1,10 @@
+export type GameType = 'yacht' | 'lasVegas';
+
+export const PLAYER_LIMITS: Record<GameType, { min: number; max: number }> = {
+  yacht: { min: 1, max: 6 },
+  lasVegas: { min: 2, max: 5 },
+};
+
 export type Category =
   | 'aces'
   | 'deuces'
